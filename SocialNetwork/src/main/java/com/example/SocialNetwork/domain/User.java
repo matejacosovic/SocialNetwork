@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -14,8 +13,9 @@ import java.util.Set;
 @Table(name = "users")
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Where(clause = "deleted = false")
-@Data
+@Getter @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"email"})
 public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
@@ -32,13 +32,13 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "friends",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id"))
     private Set<User> friends = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "friends",
             joinColumns = @JoinColumn(name = "friend_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -58,5 +58,15 @@ public class User extends BaseEntity {
         this.surname = surname;
         this.username = username;
         this.type = UserType.User;
+    }
+
+    public void addFriend(User friend) {
+        friends.add(friend);
+        friend.friendOf.add(this);
+    }
+
+    public void removeFriend(User friend) {
+        friends.remove(friend);
+        friend.friendOf.remove(this);
     }
 }

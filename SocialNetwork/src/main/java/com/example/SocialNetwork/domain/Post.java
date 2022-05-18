@@ -1,14 +1,14 @@
 package com.example.SocialNetwork.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 @Entity
 @Where(clause = "deleted = false")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class Post extends BaseEntity {
     @Column(columnDefinition="text", nullable = true)
@@ -21,6 +21,14 @@ public class Post extends BaseEntity {
     private LocalDateTime dateCreated;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = true)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Post(String text, String image, LocalDateTime now, User user) {
+        super();
+        this.text = text;
+        this.image = image;
+        this.dateCreated = now;
+        this.user = user;
+    }
 }
