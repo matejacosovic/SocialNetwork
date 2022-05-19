@@ -3,21 +3,21 @@ package com.example.SocialNetwork.service;
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class UserService {
 
-    private UserRepository userRepository;
-    @Autowired
-    public UserService(UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
+    private final UserRepository userRepository;
 
     public UserDTO create(UserDTO userDTO) {
         Optional<User> userOptionalEmail = userRepository.findByEmail(userDTO.getEmail());
@@ -40,14 +40,14 @@ public class UserService {
     }
 
     public List<UserDTO> listUsers(String keyword) {
-        if (keyword != null && !keyword.trim().equals("")) {
-            return userRepository.search(keyword.toLowerCase()).stream().map(UserDTO::new).collect(Collectors.toList());
-        }
-        return userRepository.findAll().stream().map(UserDTO::new).collect(Collectors.toList());
+        return userRepository.search(keyword.trim().toLowerCase())
+                .stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toList());
     }
 
 
-    public UserDTO connect(Integer who, Integer withWho) {
+    public UserDTO connect(String who, String withWho) {
         User connector = checkIfUserExists(who);
         User connected = checkIfUserExists(withWho);
 
@@ -57,7 +57,7 @@ public class UserService {
         return new UserDTO(connector);
     }
 
-    public UserDTO removeConnect(Integer who, Integer withWho) {
+    public UserDTO removeConnect(String who, String withWho) {
         User connector = checkIfUserExists(who);
         User connected = checkIfUserExists(withWho);
 
@@ -67,7 +67,7 @@ public class UserService {
         return new UserDTO(connector);
     }
 
-    public User checkIfUserExists(Integer id){
+    public User checkIfUserExists(String id){
         Optional<User> userOptional = userRepository.findById(id);
         if(userOptional.isEmpty()){
             throw new RuntimeException("User with id: " + id + " doesn't exist!");

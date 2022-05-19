@@ -7,8 +7,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 @Entity
 @Where(clause = "deleted = false")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class Post extends BaseEntity {
     @Column(columnDefinition="text", nullable = true)

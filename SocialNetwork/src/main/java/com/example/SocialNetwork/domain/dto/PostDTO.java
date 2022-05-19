@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class PostDTO {
-    private Integer id;
-    private Integer userId;
+    private String id;
+    private String userId;
     private String text;
     private String image;
     private LocalDateTime dateCreated;

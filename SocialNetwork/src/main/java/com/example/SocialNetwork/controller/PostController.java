@@ -3,6 +3,7 @@ package com.example.SocialNetwork.controller;
 import com.example.SocialNetwork.domain.dto.PostDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.service.PostService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,27 +13,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/posts")
+@RequiredArgsConstructor
 public class PostController {
 
-    private PostService postService;
+    private final PostService postService;
 
-    @Autowired
-    public PostController(PostService postService){
-        this.postService = postService;
-    }
 
-    @ExceptionHandler(value = RuntimeException.class)
-    public ResponseEntity handleException(RuntimeException runtimeException) {
-        return new ResponseEntity(runtimeException.getMessage(), HttpStatus.CONFLICT);
-    }
 
     @PostMapping()
     public ResponseEntity<PostDTO> create(@RequestBody PostDTO postDTO){
         return ResponseEntity.ok(postService.create(postDTO));
     }
 
-    @GetMapping(value = "/get/{id}")
-    public ResponseEntity<PostDTO> read(@PathVariable Integer id){
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<PostDTO> read(@PathVariable String id){
         return ResponseEntity.ok(postService.read(id));
     }
 
@@ -41,8 +35,8 @@ public class PostController {
         return ResponseEntity.ok(postService.update(postDTO));
     }
 
-    @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<PostDTO> delete(@PathVariable Integer id){
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<PostDTO> delete(@PathVariable String id){
         return ResponseEntity.ok(postService.delete(id));
     }
 
@@ -51,13 +45,13 @@ public class PostController {
         return ResponseEntity.ok(postService.getAll());
     }
 
-    @GetMapping(value = "/get-by-user/{userId}")
-    public ResponseEntity<List<PostDTO>> getAllByUser(@PathVariable Integer userId){
+    @GetMapping(value = "/wall")
+    public ResponseEntity<List<PostDTO>> getAllByUser(@RequestParam(name = "userId") String userId){
         return ResponseEntity.ok(postService.getAllByUser(userId));
     }
 
-    @GetMapping(value = "/get-for-user/{userId}")
-    public ResponseEntity<List<PostDTO>> getAllForUser(@PathVariable Integer userId){
+    @GetMapping(value = "/feed")
+    public ResponseEntity<List<PostDTO>> getAllForUser(@RequestParam(name = "userId") String userId){
         return ResponseEntity.ok(postService.getAllForUser(userId));
     }
 }

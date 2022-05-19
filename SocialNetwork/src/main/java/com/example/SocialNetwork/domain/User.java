@@ -32,13 +32,13 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "friends",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "friend_id"))
     private Set<User> friends = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "friends",
             joinColumns = @JoinColumn(name = "friend_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
@@ -62,11 +62,9 @@ public class User extends BaseEntity {
 
     public void addFriend(User friend) {
         friends.add(friend);
-        friend.friendOf.add(this);
     }
 
     public void removeFriend(User friend) {
         friends.remove(friend);
-        friend.friendOf.remove(this);
     }
 }
