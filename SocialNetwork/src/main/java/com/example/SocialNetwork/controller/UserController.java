@@ -1,9 +1,12 @@
 package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.domain.User;
-import com.example.SocialNetwork.domain.dto.UserCreationDTO;
+import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.hibernate.service.spi.InjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,19 +14,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> createUser(@RequestBody UserCreationDTO userCreationDTO){
-        return ResponseEntity.ok(userService.createUser(userCreationDTO));
+    @PostMapping()
+    public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO){
+        return ResponseEntity.ok(userService.create(userDTO));
     }
 
-    @GetMapping(value="/listusers", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> listUsers() {
-        return ResponseEntity.ok(userService.listUsers());
+    @GetMapping()
+    public ResponseEntity<List<UserDTO>> listUsers(@RequestParam(value = "search", defaultValue = "") String search) {
+        return ResponseEntity.ok(userService.listUsers(search));
+    }
+
+    @PostMapping(value="/connect/{who}/{withWho}")
+    public ResponseEntity<UserDTO> connect(@PathVariable String who, @PathVariable String withWho){
+        return ResponseEntity.ok(userService.connect(who, withWho));
+    }
+
+    @DeleteMapping(value="/connect/{who}/{withWho}")
+    public ResponseEntity<UserDTO> removeConnect(@PathVariable String who, @PathVariable String withWho){
+        return ResponseEntity.ok(userService.removeConnect(who, withWho));
     }
 }

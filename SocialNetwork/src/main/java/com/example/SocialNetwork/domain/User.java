@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.domain;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -14,8 +13,9 @@ import java.util.Set;
 @Table(name = "users")
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Where(clause = "deleted = false")
-@Data
+@Getter @Setter
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"email"})
 public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
@@ -58,5 +58,13 @@ public class User extends BaseEntity {
         this.surname = surname;
         this.username = username;
         this.type = UserType.User;
+    }
+
+    public void addFriend(User friend) {
+        friends.add(friend);
+    }
+
+    public void removeFriend(User friend) {
+        friends.remove(friend);
     }
 }
