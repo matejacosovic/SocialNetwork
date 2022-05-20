@@ -4,17 +4,14 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
-@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @Where(clause = "deleted = false")
 @Getter @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(of = {"email"})
 public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
@@ -44,12 +41,16 @@ public class User extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> friendOf = new HashSet<>();
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "type", insertable = false, updatable = false)
-    private UserType type;
-
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_role",
+            joinColumns =  @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles = new HashSet<>();
 
     public User(String email, String password, String name, String surname, String username) {
         this.email = email;
@@ -57,7 +58,6 @@ public class User extends BaseEntity {
         this.name = name;
         this.surname = surname;
         this.username = username;
-        this.type = UserType.User;
     }
 
     public void addFriend(User friend) {
