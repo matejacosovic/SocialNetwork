@@ -22,6 +22,4 @@ public class BaseEntity {
     @Column(columnDefinition = "boolean default false", nullable = false)
     protected boolean deleted;
 
-    @Version
-    private Integer version;
 }

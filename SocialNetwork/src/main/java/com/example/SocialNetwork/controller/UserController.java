@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -46,5 +48,20 @@ public class UserController {
     @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
     public ResponseEntity<UserDTO> removeConnect(@PathVariable String who, @PathVariable String withWho){
         return ResponseEntity.ok(userService.removeConnect(who, withWho));
+    }
+
+    @PostMapping("/forgotPassword")
+    public ResponseEntity<String> resetPassword(@RequestParam("email") String userEmail) {
+        return ResponseEntity.ok(userService.forgotPassword(userEmail));
+    }
+
+    @PostMapping("/validatePasswordToken")
+    public ResponseEntity<String> validatePasswordToken(@RequestParam("token") String token) {
+        return ResponseEntity.ok(userService.validatePasswordToken(token));
+    }
+
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody PasswordDTO passwordDTO) {
+        return ResponseEntity.ok(userService.changePassword(passwordDTO));
     }
 }
