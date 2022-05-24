@@ -46,7 +46,7 @@ public class UserService implements UserDetailsService {
                 userDTO.getSurname(),
                 userDTO.getUsername());
 
-        user.getRoles().add(roleRepository.findByName("ROLE_APPUSER"));
+        user.getRoles().add(roleRepository.findByName("ROLE_APP_USER"));
 
         userRepository.save(user);
         return new UserDTO(user);

@@ -36,14 +36,14 @@ public class UserController {
         return ResponseEntity.ok(userService.listUsers(search));
     }
 
-    @PostMapping(value="/connect/{who}/{withWho}")
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+    @PostMapping("/connect/{who}/{withWho}")
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<UserDTO> connect(@PathVariable String who, @PathVariable String withWho){
         return ResponseEntity.ok(userService.connect(who, withWho));
     }
 
-    @DeleteMapping(value="/connect/{who}/{withWho}")
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+    @DeleteMapping("/connect/{who}/{withWho}")
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<UserDTO> removeConnect(@PathVariable String who, @PathVariable String withWho){
         return ResponseEntity.ok(userService.removeConnect(who, withWho));
     }
