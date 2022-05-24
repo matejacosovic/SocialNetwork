@@ -2,20 +2,20 @@ package com.example.SocialNetwork.service;
 
 import com.example.SocialNetwork.domain.PasswordResetToken;
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
+import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.repository.PasswordTokenRepository;
 import com.example.SocialNetwork.repository.RoleRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -35,12 +35,12 @@ public class UserService implements UserDetailsService {
     public UserDTO create(UserDTO userDTO) {
         Optional<User> userOptionalEmail = userRepository.findByEmail(userDTO.getEmail());
         if (userOptionalEmail.isPresent()) {
-            throw new RuntimeException("A user with this email already exists!");
+            throw new IllegalArgumentException("A user with this email already exists!");
         }
 
         Optional<User> userOptionalUsername = userRepository.findByUsername(userDTO.getUsername());
         if (userOptionalUsername.isPresent()) {
-            throw new RuntimeException("A user with this username already exists!");
+            throw new IllegalArgumentException("A user with this username already exists!");
         }
 
         User user = new User(userDTO.getEmail(),
@@ -86,7 +86,7 @@ public class UserService implements UserDetailsService {
     public User checkIfUserExists(String id) {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with id: " + id + " doesn't exist!");
+            throw new IllegalArgumentException("User with id: " + id + " doesn't exist!");
         }
         return userOptional.get();
     }
@@ -100,6 +100,10 @@ public class UserService implements UserDetailsService {
         }
         User user = optionalUser.get();
 
+        if(user.getStatus().equals(UserStatus.Deactivated)){
+            throw new UsernameNotFoundException("Account disabled!");
+        }
+
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         user.getRoles().forEach(role -> {
             authorities.add(new SimpleGrantedAuthority(role.getName()));
@@ -110,16 +114,16 @@ public class UserService implements UserDetailsService {
                 authorities);
     }
 
-    public String forgotPassword(String userEmail) {
+    public MessageDTO forgotPassword(String userEmail) {
         Optional<User> userOptional = userRepository.findByEmail(userEmail);
         if (userOptional.isEmpty()) {
-            throw new UsernameNotFoundException("User not found!");
+            throw new IllegalArgumentException("No user with the given email!");
         }
 
         String token = UUID.randomUUID().toString();
         createPasswordResetTokenForUser(userOptional.get(), token);
         mailSenderService.sendMessage(userEmail, "Reset password token", token);
-        return "Success";
+        return new MessageDTO("Success!");
     }
 
     public void createPasswordResetTokenForUser(User user, String token) {
@@ -130,12 +134,12 @@ public class UserService implements UserDetailsService {
         passwordTokenRepository.save(myToken);
     }
 
-    public String validatePasswordToken(String token) {
+    public MessageDTO validatePasswordToken(String token) {
         PasswordResetToken passToken = passwordTokenRepository.findByToken(token);
 
-        return !isTokenFound(passToken) ? "invalidToken"
-                : isTokenExpired(passToken) ? "expired"
-                : "Valid";
+        return !isTokenFound(passToken) ? new MessageDTO("Token does not exist!")
+                : isTokenExpired(passToken) ? new MessageDTO("Token is expired!")
+                : new MessageDTO("Token is valid!");
     }
 
     private boolean isTokenFound(PasswordResetToken passToken) {
@@ -147,12 +151,12 @@ public class UserService implements UserDetailsService {
         return passToken.getExpiryDate().isBefore(currentTime);
     }
 
-    public String changePassword(PasswordDTO passwordDTO) {
+    public MessageDTO changePassword(PasswordDTO passwordDTO) {
 
-        String result = validatePasswordToken(passwordDTO.getToken());
+        MessageDTO result = validatePasswordToken(passwordDTO.getToken());
 
-        if(!result.equals("Valid")) {
-            return "Token is not valid!";
+        if(!result.getMessage().equals("Valid")) {
+            return new MessageDTO("Token is not valid!");
         }
 
         PasswordResetToken passToken = passwordTokenRepository.findByToken(passwordDTO.getToken());
@@ -160,7 +164,13 @@ public class UserService implements UserDetailsService {
         user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
         userRepository.save(user);
 
-        return "Success!";
+        return new MessageDTO("Successfully changed password!");
     }
 
+    public UserDTO deactivateUser(String userId) {
+        User user = checkIfUserExists(userId);
+        user.setStatus(UserStatus.Deactivated);
+        userRepository.save(user);
+        return new UserDTO(user);
+    }
 }

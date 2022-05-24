@@ -5,7 +5,9 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
+import com.example.SocialNetwork.domain.dto.PostDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -51,17 +53,23 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<String> resetPassword(@RequestParam("email") String userEmail) {
+    public ResponseEntity<MessageDTO> resetPassword(@RequestParam("email") String userEmail) {
         return ResponseEntity.ok(userService.forgotPassword(userEmail));
     }
 
     @PostMapping("/validatePasswordToken")
-    public ResponseEntity<String> validatePasswordToken(@RequestParam("token") String token) {
+    public ResponseEntity<MessageDTO> validatePasswordToken(@RequestParam("token") String token) {
         return ResponseEntity.ok(userService.validatePasswordToken(token));
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<String> changePassword(@RequestBody PasswordDTO passwordDTO) {
+    public ResponseEntity<MessageDTO> changePassword(@RequestBody PasswordDTO passwordDTO) {
         return ResponseEntity.ok(userService.changePassword(passwordDTO));
+    }
+
+    @PutMapping(value = "/deactivate")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<UserDTO> deactivateUser(@RequestParam(name = "userId") String userId){
+        return ResponseEntity.ok(userService.deactivateUser(userId));
     }
 }

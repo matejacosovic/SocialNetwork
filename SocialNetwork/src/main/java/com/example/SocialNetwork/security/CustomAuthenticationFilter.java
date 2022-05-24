@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    //ovde mozda greska
     private final AuthenticationManager authenticationManager;
 
     @Override
@@ -63,8 +62,9 @@ public class CustomAuthenticationFilter extends UsernamePasswordAuthenticationFi
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         Map<String, String> error = new HashMap<>();
-        error.put("message", "Invalid combination of username/password");
+        error.put("message", failed.getMessage());
         response.setContentType("application/json");
+        response.setStatus(401);
         new ObjectMapper().writeValue(response.getOutputStream(), error);
     }
 }
