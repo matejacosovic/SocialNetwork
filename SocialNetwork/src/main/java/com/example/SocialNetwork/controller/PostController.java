@@ -2,6 +2,7 @@ package com.example.SocialNetwork.controller;
 
 import com.example.SocialNetwork.domain.dto.PostDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
+import com.example.SocialNetwork.security.AuthenticationFacade;
 import com.example.SocialNetwork.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ public class PostController {
 
     private final PostService postService;
 
+    private final AuthenticationFacade authenticationFacade;
+
     @PostMapping()
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<PostDTO> create(@RequestBody PostDTO postDTO){
-        return ResponseEntity.ok(postService.create(postDTO));
+        return ResponseEntity.ok(postService.create(postDTO, authenticationFacade.getUsernameFromJwt()));
     }
 
     @GetMapping("/{id}")
@@ -57,7 +60,7 @@ public class PostController {
 
     @GetMapping( "/feed")
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<List<PostDTO>> getAllForUser(@RequestParam(name = "userId") String userId){
-        return ResponseEntity.ok(postService.getAllForUser(userId));
+    public ResponseEntity<List<PostDTO>> getAllForUser(){
+        return ResponseEntity.ok(postService.getAllForUser(authenticationFacade.getUsernameFromJwt()));
     }
 }

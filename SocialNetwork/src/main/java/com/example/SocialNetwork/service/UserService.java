@@ -61,7 +61,7 @@ public class UserService implements UserDetailsService {
 
 
     public UserDTO connect(String who, String withWho) {
-        User connector = checkIfUserExists(who);
+        User connector = checkUsername(who);
         User connected = checkIfUserExists(withWho);
 
         connector.addFriend(connected);
@@ -71,7 +71,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDTO removeConnect(String who, String withWho) {
-        User connector = checkIfUserExists(who);
+        User connector = checkUsername(who);
         User connected = checkIfUserExists(withWho);
 
         connector.removeFriend(connected);
@@ -84,6 +84,14 @@ public class UserService implements UserDetailsService {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             throw new RuntimeException("User with id: " + id + " doesn't exist!");
+        }
+        return userOptional.get();
+    }
+
+    public User checkUsername(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        if (userOptional.isEmpty()) {
+            throw new RuntimeException("User with username: " + username + " doesn't exist!");
         }
         return userOptional.get();
     }

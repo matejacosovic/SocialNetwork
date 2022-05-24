@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.UserDTO;
+import com.example.SocialNetwork.security.AuthenticationFacade;
 import com.example.SocialNetwork.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.InjectService;
@@ -14,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +26,8 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+
+    private final AuthenticationFacade authenticationFacade;
 
     @PostMapping()
     public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO){
@@ -36,15 +40,15 @@ public class UserController {
         return ResponseEntity.ok(userService.listUsers(search));
     }
 
-    @PostMapping("/connect/{who}/{withWho}")
+    @PostMapping("/connect/{withWho}")
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<UserDTO> connect(@PathVariable String who, @PathVariable String withWho){
-        return ResponseEntity.ok(userService.connect(who, withWho));
+    public ResponseEntity<UserDTO> connect(@PathVariable String withWho){
+        return ResponseEntity.ok(userService.connect(authenticationFacade.getUsernameFromJwt(), withWho));
     }
 
-    @DeleteMapping("/connect/{who}/{withWho}")
+    @DeleteMapping("/connect/{withWho}")
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<UserDTO> removeConnect(@PathVariable String who, @PathVariable String withWho){
-        return ResponseEntity.ok(userService.removeConnect(who, withWho));
+    public ResponseEntity<UserDTO> removeConnect(@PathVariable String withWho){
+        return ResponseEntity.ok(userService.removeConnect(authenticationFacade.getUsernameFromJwt(), withWho));
     }
 }

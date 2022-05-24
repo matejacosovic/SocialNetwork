@@ -5,7 +5,6 @@ import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.PostDTO;
 import com.example.SocialNetwork.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -24,8 +23,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
 
-    public PostDTO create(PostDTO postDTO) {
-        User user = userService.checkIfUserExists(postDTO.getUserId());
+    public PostDTO create(PostDTO postDTO, String usernameFromJwt) {
+        User user = userService.checkUsername(usernameFromJwt);
 
         Post post = new Post(postDTO.getText(),
                 postDTO.getImage(),
@@ -80,8 +79,8 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public List<PostDTO> getAllForUser(String userId) {
-        User user = userService.checkIfUserExists(userId);
+    public List<PostDTO> getAllForUser(String username) {
+        User user = userService.checkUsername(username);
 
         List<Post> result = new ArrayList<>(postRepository.findByUser(user));
 
