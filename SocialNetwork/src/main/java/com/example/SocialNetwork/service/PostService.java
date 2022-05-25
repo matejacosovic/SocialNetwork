@@ -100,7 +100,7 @@ public class PostService {
 
     public PostDTO hidePost(String postId) {
         Post post = checkIfPostExists(postId);
-        post.setStatus(PostStatus.Hidden);
+        post.setStatus(PostStatus.HIDDEN);
         postRepository.save(post);
         return new PostDTO(post);
     }

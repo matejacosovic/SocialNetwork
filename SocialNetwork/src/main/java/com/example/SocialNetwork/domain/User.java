@@ -66,7 +66,7 @@ public class User extends BaseEntity {
         this.name = name;
         this.surname = surname;
         this.username = username;
-        this.status = UserStatus.Activated;
+        this.status = UserStatus.ACTIVATED;
     }
 
     public void addFriend(User friend) {

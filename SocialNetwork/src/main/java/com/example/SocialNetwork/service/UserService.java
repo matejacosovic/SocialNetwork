@@ -100,7 +100,7 @@ public class UserService implements UserDetailsService {
         }
         User user = optionalUser.get();
 
-        if(user.getStatus().equals(UserStatus.Deactivated)){
+        if(user.getStatus().equals(UserStatus.DEACTIVATED)){
             throw new UsernameNotFoundException("Account disabled!");
         }
 
@@ -169,7 +169,7 @@ public class UserService implements UserDetailsService {
 
     public UserDTO deactivateUser(String userId) {
         User user = checkIfUserExists(userId);
-        user.setStatus(UserStatus.Deactivated);
+        user.setStatus(UserStatus.DEACTIVATED);
         userRepository.save(user);
         return new UserDTO(user);
     }
