@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/create-schema.xml
+  - include:
+      file: db/changelog/insert-data-roles.xml
+  - include:
+      file: db/changelog/insert-data-users.xml
+  - include:
+      file: db/changelog/insert-data-user-roles.xml

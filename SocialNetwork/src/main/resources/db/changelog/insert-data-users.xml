@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="05" author="mateja">
+        <comment>Inserting Admin</comment>
+        <insert tableName="users">
+            <column name="id" value="ccb953a7-d244-48bb-8627-4b2437491dc1"/>
+            <column name="deleted" value="false"/>
+            <column name="email" value="mateja.cosovic@vegait.rs"/>
+            <column name="name" value="Admin"/>
+            <column name="surname" value="Adminkovic"/>
+            <column name="password" value="$2a$12$aBK0PhtcZ9Zg.gBHCFh6Lu9d.oAypyEfhPtUevhQllLC1CD2Wtxku"/>
+            <column name="username" value="admin"/>
+            <column name="status" value="ACTIVATED"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
