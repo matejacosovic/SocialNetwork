@@ -92,7 +92,10 @@ public class PostService {
 
         result.sort(Comparator.comparing(Post::getCreatedDate).reversed());
 
-        return result.stream().map(PostDTO::new).collect(Collectors.toList());
+        return result
+                .stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
     }
 
     public PostDTO hidePost(String postId) {
