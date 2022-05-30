@@ -14,8 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
+import static com.example.SocialNetwork.security.AuthenticationUtil.getUsernameFromJwt;
 import java.util.List;
 
 @RestController
@@ -25,26 +26,26 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO){
         return ResponseEntity.ok(userService.create(userDTO));
     }
 
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<UserDTO>> listUsers(@RequestParam(value = "search", defaultValue = "") String search) {
         return ResponseEntity.ok(userService.listUsers(search));
     }
 
-    @PostMapping("/connect/{who}/{withWho}")
+    @PostMapping("/connect/{withWho}")
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<UserDTO> connect(@PathVariable String who, @PathVariable String withWho){
-        return ResponseEntity.ok(userService.connect(who, withWho));
+    public ResponseEntity<UserDTO> connect(@PathVariable String withWho){
+        return ResponseEntity.ok(userService.connect(getUsernameFromJwt(), withWho));
     }
 
-    @DeleteMapping("/connect/{who}/{withWho}")
+    @DeleteMapping("/connect/{withWho}")
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<UserDTO> removeConnect(@PathVariable String who, @PathVariable String withWho){
-        return ResponseEntity.ok(userService.removeConnect(who, withWho));
+    public ResponseEntity<UserDTO> removeConnect(@PathVariable String withWho){
+        return ResponseEntity.ok(userService.removeConnect(getUsernameFromJwt(), withWho));
     }
 }
