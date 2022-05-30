@@ -82,18 +82,14 @@ public class UserService implements UserDetailsService {
 
     public User checkIfUserExists(String id) {
         Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with id: " + id + " doesn't exist!");
-        }
-        return userOptional.get();
+        return userOptional
+                .orElseThrow(() -> new RuntimeException("User with id: " + id + " doesn't exist!"));
     }
 
     public User findUser(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
-        if (userOptional.isEmpty()) {
-            throw new RuntimeException("User with username: " + username + " doesn't exist!");
-        }
-        return userOptional.get();
+        return userOptional
+                .orElseThrow(() -> new RuntimeException("User with username: " + username + " doesn't exist!"));
     }
 
     @Override
