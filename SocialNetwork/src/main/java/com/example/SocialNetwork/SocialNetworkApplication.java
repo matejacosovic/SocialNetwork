@@ -16,7 +16,9 @@ public class SocialNetworkApplication {
 	}
 
 	@Bean
-	PasswordEncoder passwordEncoder(){
+	public PasswordEncoder passwordEncoder(){
 		return new BCryptPasswordEncoder();
 	}
+
+
 }
