@@ -29,9 +29,8 @@ public class PostService {
                 postDTO.getImage(),
                 user
         );
-        postRepository.save(post);
 
-        return new PostDTO(post);
+        return new PostDTO(postRepository.save(post));
     }
 
     public PostDTO read(String id) {

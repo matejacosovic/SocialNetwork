@@ -30,8 +30,8 @@ public class UserService implements UserDetailsService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordTokenRepository passwordTokenRepository;
-
     private final MailSenderService mailSenderService;
+
     public UserDTO create(UserDTO userDTO) {
         Optional<User> userOptionalEmail = userRepository.findByEmail(userDTO.getEmail());
         if (userOptionalEmail.isPresent()) {
@@ -155,7 +155,7 @@ public class UserService implements UserDetailsService {
 
         MessageDTO result = validatePasswordToken(passwordDTO.getToken());
 
-        if(!result.getMessage().equals("Valid")) {
+        if(!result.getMessage().equals("Token is valid!")) {
             return new MessageDTO("Token is not valid!");
         }
 
