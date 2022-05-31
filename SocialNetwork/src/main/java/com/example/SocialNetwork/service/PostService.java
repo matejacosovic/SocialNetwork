@@ -22,8 +22,8 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
 
-    public PostDTO create(PostDTO postDTO) {
-        User user = userService.checkIfUserExists(postDTO.getUserId());
+    public PostDTO create(PostDTO postDTO, String usernameFromJwt) {
+        User user = userService.findUser(usernameFromJwt);
 
         Post post = new Post(postDTO.getText(),
                 postDTO.getImage(),
@@ -76,8 +76,8 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-    public List<PostDTO> getAllForUser(String userId) {
-        User user = userService.checkIfUserExists(userId);
+    public List<PostDTO> getAllForUser(String username) {
+        User user = userService.findUser(username);
 
         List<Post> result = new ArrayList<>(postRepository.findByUser(user));
 

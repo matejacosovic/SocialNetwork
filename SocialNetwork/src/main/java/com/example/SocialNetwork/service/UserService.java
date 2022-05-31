@@ -10,6 +10,7 @@ import com.example.SocialNetwork.repository.PasswordTokenRepository;
 import com.example.SocialNetwork.repository.RoleRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -49,7 +50,7 @@ public class UserService implements UserDetailsService {
                 userDTO.getSurname(),
                 userDTO.getUsername());
 
-        user.getRoles().add(roleRepository.findByName("ROLE_APPUSER"));
+        user.getRoles().add(roleRepository.findByName("ROLE_APP_USER"));
 
         userRepository.save(user);
         return new UserDTO(user);
@@ -64,7 +65,7 @@ public class UserService implements UserDetailsService {
 
 
     public UserDTO connect(String who, String withWho) {
-        User connector = checkIfUserExists(who);
+        User connector = findUser(who);
         User connected = checkIfUserExists(withWho);
 
         connector.addFriend(connected);
@@ -74,7 +75,7 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDTO removeConnect(String who, String withWho) {
-        User connector = checkIfUserExists(who);
+        User connector = findUser(who);
         User connected = checkIfUserExists(withWho);
 
         connector.removeFriend(connected);
@@ -85,10 +86,14 @@ public class UserService implements UserDetailsService {
 
     public User checkIfUserExists(String id) {
         Optional<User> userOptional = userRepository.findById(id);
-        if (userOptional.isEmpty()) {
-            throw new IllegalArgumentException("User with id: " + id + " doesn't exist!");
-        }
-        return userOptional.get();
+        return userOptional
+                .orElseThrow(() -> new RuntimeException("User with id: " + id + " doesn't exist!"));
+    }
+
+    public User findUser(String username) {
+        Optional<User> userOptional = userRepository.findByUsername(username);
+        return userOptional
+                .orElseThrow(() -> new RuntimeException("User with username: " + username + " doesn't exist!"));
     }
 
     @Override
@@ -174,3 +179,4 @@ public class UserService implements UserDetailsService {
         return new UserDTO(user);
     }
 }
+

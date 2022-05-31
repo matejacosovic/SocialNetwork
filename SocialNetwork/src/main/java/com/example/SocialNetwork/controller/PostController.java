@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import static com.example.SocialNetwork.security.AuthenticationUtil.getUsernameFromJwt;
 
 import java.util.List;
 
@@ -19,46 +20,47 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+
+    @PostMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<PostDTO> create(@RequestBody PostDTO postDTO){
-        return ResponseEntity.ok(postService.create(postDTO));
+        return ResponseEntity.ok(postService.create(postDTO, getUsernameFromJwt()));
     }
 
-    @GetMapping(value = "/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<PostDTO> read(@PathVariable String id){
         return ResponseEntity.ok(postService.read(id));
     }
 
-    @PutMapping()
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+    @PutMapping
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<PostDTO> update(@RequestBody PostDTO postDTO){
         return ResponseEntity.ok(postService.update(postDTO));
     }
 
-    @DeleteMapping(value = "/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<PostDTO> delete(@PathVariable String id){
         return ResponseEntity.ok(postService.delete(id));
     }
 
-    @GetMapping()
+    @GetMapping
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
     public ResponseEntity<List<PostDTO>> getAll(){
         return ResponseEntity.ok(postService.getAll());
     }
 
-    @GetMapping(value = "/wall")
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
+    @GetMapping("/wall")
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
     public ResponseEntity<List<PostDTO>> getAllByUser(@RequestParam(name = "userId") String userId){
         return ResponseEntity.ok(postService.getAllByUser(userId));
     }
 
-    @GetMapping(value = "/feed")
-    @PreAuthorize("hasAnyAuthority('ROLE_APPUSER', 'ROLE_ADMIN')")
-    public ResponseEntity<List<PostDTO>> getAllForUser(@RequestParam(name = "userId") String userId){
-        return ResponseEntity.ok(postService.getAllForUser(userId));
+    @GetMapping( "/feed")
+    @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
+    public ResponseEntity<List<PostDTO>> getAllForUser(){
+        return ResponseEntity.ok(postService.getAllForUser(getUsernameFromJwt()));
     }
 
     @PutMapping(value = "/hide")
