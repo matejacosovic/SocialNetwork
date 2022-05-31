@@ -1,7 +1,11 @@
 package com.example.SocialNetwork.domain;
 
+import com.example.SocialNetwork.domain.enums.PostStatus;
+import com.example.SocialNetwork.domain.enums.UserStatus;
 import lombok.*;
 import org.hibernate.annotations.Where;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.*;
@@ -28,6 +32,10 @@ public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String username;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus status;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "friends",
@@ -58,6 +66,7 @@ public class User extends BaseEntity {
         this.name = name;
         this.surname = surname;
         this.username = username;
+        this.status = UserStatus.ACTIVATED;
     }
 
     public void addFriend(User friend) {
@@ -67,4 +76,5 @@ public class User extends BaseEntity {
     public void removeFriend(User friend) {
         friends.remove(friend);
     }
+
 }

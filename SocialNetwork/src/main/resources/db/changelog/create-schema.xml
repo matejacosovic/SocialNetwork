@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="04" author="mateja">
+        <createTable tableName="users"
+                     remarks="A table to contain all users">
+            <column name="id" type="varchar(255)">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="deleted" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="surname" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="varchar(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="roles"
+                     remarks="A table to contain all the roles">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_role"
+                     remarks="A table to contain all the user roles">
+            <column name="user_id" type="varchar(255)">
+                <constraints nullable="false" foreignKeyName="fk_user" references="users(id)"
+                             primaryKey="true" primaryKeyName="pk_user_role"/>
+            </column>
+            <column name="role_id" type="int8">
+                <constraints nullable="false" foreignKeyName="fk_role" references="roles(id)"
+                             primaryKey="true" primaryKeyName="pk_user_role"/>
+            </column>
+
+        </createTable>
+
+        <createTable tableName="post"
+                     remarks="A table to contain all posts">
+            <column name="id" type="varchar(255)">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="deleted" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="image" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="last_modified_date" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="text">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_id" type="varchar(255)">
+                <constraints nullable="false" foreignKeyName="fk_user" references="users(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="password_reset_token"
+                     remarks="A table to contain all tokens">
+            <column name="id" type="int8">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="expiry_date" type="timestamp">
+                <constraints nullable="true"/>
+            </column>
+            <column name="token" type="varchar(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="user_id" type="varchar(255)">
+                <constraints nullable="false" foreignKeyName="fk_user" references="users(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="friends"
+                     remarks="A table to contain all the friends">
+            <column name="user_id" type="varchar(255)">
+                <constraints nullable="false" foreignKeyName="fk_user" references="users(id)"
+                             primaryKey="true" primaryKeyName="pk_friends"/>
+            </column>
+            <column name="friend_id" type="varchar(255)">
+                <constraints nullable="false" foreignKeyName="fk_friend" references="users(id)"
+                             primaryKey="true" primaryKeyName="pk_friends"/>
+            </column>
+
+        </createTable>
+
+
+    </changeSet>
+</databaseChangeLog>

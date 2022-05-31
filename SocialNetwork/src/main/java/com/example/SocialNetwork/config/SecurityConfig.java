@@ -1,5 +1,7 @@
-package com.example.SocialNetwork.security;
+package com.example.SocialNetwork.config;
 
+import com.example.SocialNetwork.security.CustomAuthenticationFilter;
+import com.example.SocialNetwork.security.CustomAuthorizationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -45,7 +47,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
                 .antMatchers("/api/v1/login").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
-        .anyRequest().authenticated().and()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/forgotPassword").permitAll().antMatchers(HttpMethod.POST, "/api/v1/users/forgotPassword").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/validatePasswordToken").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/v1/users/changePassword").permitAll()
+                .anyRequest().authenticated().and()
                 .addFilter(customAuthenticationFilter)
                 .addFilterBefore(new CustomAuthorizationFilter(secret), UsernamePasswordAuthenticationFilter.class);
     }

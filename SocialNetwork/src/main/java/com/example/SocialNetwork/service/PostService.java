@@ -3,12 +3,11 @@ package com.example.SocialNetwork.service;
 import com.example.SocialNetwork.domain.Post;
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.PostDTO;
+import com.example.SocialNetwork.domain.enums.PostStatus;
 import com.example.SocialNetwork.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -28,7 +27,6 @@ public class PostService {
 
         Post post = new Post(postDTO.getText(),
                 postDTO.getImage(),
-                LocalDateTime.now(),
                 user
         );
         postRepository.save(post);
@@ -59,7 +57,7 @@ public class PostService {
     public Post checkIfPostExists(String id){
         Optional<Post> optionalPost = postRepository.findById(id);
         if(optionalPost.isEmpty()){
-            throw new RuntimeException("There is no post with the given id: " + id);
+            throw new IllegalArgumentException("There is no post with the given id: " + id);
         }
         return optionalPost.get();
     }
@@ -92,8 +90,18 @@ public class PostService {
             result.addAll(postRepository.findByUser(friend));
         });
 
-        result.sort(Comparator.comparing(Post::getDateCreated).reversed());
+        result.sort(Comparator.comparing(Post::getCreatedDate).reversed());
 
-        return result.stream().map(PostDTO::new).collect(Collectors.toList());
+        return result
+                .stream()
+                .map(PostDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    public PostDTO hidePost(String postId) {
+        Post post = checkIfPostExists(postId);
+        post.setStatus(PostStatus.HIDDEN);
+        postRepository.save(post);
+        return new PostDTO(post);
     }
 }

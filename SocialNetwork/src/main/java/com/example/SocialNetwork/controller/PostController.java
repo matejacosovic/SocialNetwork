@@ -62,4 +62,10 @@ public class PostController {
     public ResponseEntity<List<PostDTO>> getAllForUser(){
         return ResponseEntity.ok(postService.getAllForUser(getUsernameFromJwt()));
     }
+
+    @PutMapping(value = "/hide")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
+    public ResponseEntity<PostDTO> hidePost(@RequestParam(name = "postId") String postId){
+        return ResponseEntity.ok(postService.hidePost(postId));
+    }
 }

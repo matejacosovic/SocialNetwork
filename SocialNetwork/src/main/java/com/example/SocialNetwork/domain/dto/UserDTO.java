@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.domain.dto;
 
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.enums.UserStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,6 +20,7 @@ public class UserDTO {
     private String surname;
     private String username;
     private List<String> friends = new ArrayList<>();
+    private UserStatus status;
 
     public UserDTO(User user){
         this.id = user.getId();
@@ -29,6 +31,7 @@ public class UserDTO {
         this.username = user.getUsername();
         this.friends.addAll(user.getFriends().stream().map(User::getUsername).toList());
         this.friends.addAll(user.getFriendOf().stream().map(User::getUsername).toList());
+        this.status = user.getStatus();
     }
 
 }
