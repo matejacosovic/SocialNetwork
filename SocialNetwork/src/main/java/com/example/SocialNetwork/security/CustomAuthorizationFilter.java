@@ -3,15 +3,12 @@ package com.example.SocialNetwork.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -53,7 +50,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(username, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
-        } catch (Exception exception) {
+        } catch (JWTVerificationException | NullPointerException exception) {
             response.setHeader("error", exception.getMessage());
             response.setStatus(401);
             Map<String, String> error = new HashMap<>();
@@ -64,10 +61,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private String getTokenFromHeader(String header) {
-        if (!StringUtils.hasText(header)) {
-            return null;
-        } else {
-            return header.substring("Bearer ".length());
-        }
+        return StringUtils.hasText(header) ? header.substring("Bearer ".length()) : null;
     }
 }

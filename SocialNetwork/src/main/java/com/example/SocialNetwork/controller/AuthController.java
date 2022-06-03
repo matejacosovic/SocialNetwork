@@ -32,6 +32,9 @@ public class AuthController {
     @Value("${social-network.name}")
     private String appName;
 
+    @Value("${social-network.security.token-duration}")
+    private Integer tokenDuration;
+
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
@@ -49,7 +52,7 @@ public class AuthController {
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+10*60*1000))
+                .withExpiresAt(new Date(System.currentTimeMillis()+Integer.valueOf(tokenDuration)))
                 .withIssuer(appName)
                 .withClaim("roles", user.getAuthorities()
                         .stream()
