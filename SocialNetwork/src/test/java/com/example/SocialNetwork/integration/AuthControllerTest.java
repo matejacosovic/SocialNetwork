@@ -1,7 +1,6 @@
 package com.example.SocialNetwork.integration;
 
 import com.example.SocialNetwork.domain.dto.JwtAuthDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
@@ -9,7 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AuthControllerTest extends AbstractControllerTest{
+public class AuthControllerTest extends AbstractControllerTest {
 
     @Test
     public void login_validCredentials_statusOk() throws Exception {
@@ -36,11 +35,5 @@ public class AuthControllerTest extends AbstractControllerTest{
 
     }
 
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+
 }

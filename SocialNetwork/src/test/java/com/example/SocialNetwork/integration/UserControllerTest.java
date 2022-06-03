@@ -1,25 +1,10 @@
 package com.example.SocialNetwork.integration;
 
-import com.example.SocialNetwork.domain.dto.JwtAuthDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,14 +12,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-public class UserControllerTest extends AbstractControllerTest{
+public class UserControllerTest extends AbstractControllerTest {
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void listAllUsers_withAccessToken_returnsAllUsers() throws Exception {
-        String accessToken = obtainAccessToken("admin", "password");
-
-        this.mvc.perform(get("/api/v1/users")
-                        .header("Authorization", "Bearer " + accessToken))
+        this.mvc.perform(get("/api/v1/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].email", equalTo("mateja.test@vegait.rs")));
@@ -42,11 +25,9 @@ public class UserControllerTest extends AbstractControllerTest{
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void listUsersWithKeyword_withAccessToken_returnsOneUser() throws Exception {
-        String accessToken = obtainAccessToken("admin", "password");
-
         this.mvc.perform(get("/api/v1/users")
-                        .header("Authorization", "Bearer " + accessToken)
                         .param("search", "mak"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -54,17 +35,16 @@ public class UserControllerTest extends AbstractControllerTest{
     }
 
     @Test
-    public void listUsers_noAccessToken_statusIsUnauthorized() throws Exception {
-        this.mvc.perform(get("/api/v1/users"))
+    public void listUsers_invalidAccessToken_statusIsUnauthorized() throws Exception {
+        this.mvc.perform(get("/api/v1/users")
+                        .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void listUsers_wrongAccessToken_statusIsForbidden() throws Exception {
-        String accessToken = obtainAccessToken("user", "password");
-
-        this.mvc.perform(get("/api/v1/users")
-                        .header("Authorization", "Bearer " + accessToken))
+    @WithMockUser(username = "user", authorities = {"ROLE_APP_USER"})
+    public void listUsers_wrongRoleAccessToken_statusIsForbidden() throws Exception {
+        this.mvc.perform(get("/api/v1/users"))
                 .andExpect(status().isForbidden());
     }
 
@@ -175,10 +155,9 @@ public class UserControllerTest extends AbstractControllerTest{
 
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void deactivateUser_withAccessTokenAndValidUserId_deactivatesUser() throws Exception {
-        String accessToken = obtainAccessToken("admin", "password");
         this.mvc.perform(put("/api/v1/users/deactivate")
-                        .header("Authorization", "Bearer " + accessToken)
                         .param("userId", "test-id"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo("DEACTIVATED")))
@@ -187,10 +166,9 @@ public class UserControllerTest extends AbstractControllerTest{
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void deactivateUser_withAccessTokenAndInvalidUserId_throwsException() throws Exception {
-        String accessToken = obtainAccessToken("admin", "password");
         this.mvc.perform(put("/api/v1/users/deactivate")
-                        .header("Authorization", "Bearer " + accessToken)
                         .param("userId", "mak")
                 )
                 .andExpect(status().isConflict())
@@ -199,41 +177,18 @@ public class UserControllerTest extends AbstractControllerTest{
     }
 
     @Test
-    public void deactivateUser_withWrongAccessToken_statusIsForbidden() throws Exception {
-        String accessToken = obtainAccessToken("user", "password");
+    @WithMockUser(username = "user", authorities = {"ROLE_APP_USER"})
+    public void deactivateUser_withWrongRoleAccessToken_statusIsForbidden() throws Exception {
         this.mvc.perform(put("/api/v1/users/deactivate")
-                        .header("Authorization", "Bearer " + accessToken)
                         .param("userId", "maka"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    public void deactivateUser_noAccessToken_statusIsUnauthorized() throws Exception {
-        this.mvc.perform(put("/api/v1/users/deactivate"))
+    public void deactivateUser_invalidAccessToken_statusIsUnauthorized() throws Exception {
+        this.mvc.perform(put("/api/v1/users/deactivate")
+                        .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
 
-    public static String asJsonString(final Object obj) {
-        try {
-            return new ObjectMapper().writeValueAsString(obj);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String obtainAccessToken(String username, String password) throws Exception {
-        JwtAuthDTO authDTO = new JwtAuthDTO();
-        authDTO.setUsername(username);
-        authDTO.setPassword(password);
-        ResultActions result
-                = mvc.perform(post("/api/v1/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(authDTO)))
-                .andExpect(status().isOk());
-
-        String resultString = result.andReturn().getResponse().getContentAsString();
-
-        JacksonJsonParser jsonParser = new JacksonJsonParser();
-        return jsonParser.parseMap(resultString).get("accessToken").toString();
-    }
 }
