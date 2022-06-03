@@ -56,11 +56,6 @@ public class UserController {
         return ResponseEntity.ok(userService.forgotPassword(userEmail));
     }
 
-    @PostMapping("/validatePasswordToken")
-    public ResponseEntity<MessageDTO> validatePasswordToken(@RequestParam("token") String token) {
-        return ResponseEntity.ok(userService.validatePasswordToken(token));
-    }
-
     @PostMapping("/changePassword")
     public ResponseEntity<MessageDTO> changePassword(@RequestBody PasswordDTO passwordDTO) {
         return ResponseEntity.ok(userService.changePassword(passwordDTO));
