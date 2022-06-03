@@ -44,5 +44,6 @@ public class Post extends BaseEntity {
         this.text = text;
         this.image = image;
         this.user = user;
+        this.status = PostStatus.VISIBLE;
     }
 }

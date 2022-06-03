@@ -94,6 +94,8 @@ class PostServiceTest {
         postsByUser2.add(post2);
 
 
+        given(userService.findUser("user1")).willReturn(user1);
+        given(userService.findUser("non_existing")).willThrow(new IllegalArgumentException("User with id: non_existing doesn't exist!"));
         given(userService.checkIfUserExists("1")).willReturn(user1);
         given(userService.checkIfUserExists("non_existing")).willThrow(new IllegalArgumentException("User with id: non_existing doesn't exist!"));
         given(postRepository.save(any(Post.class))).willReturn(post1);
@@ -108,43 +110,41 @@ class PostServiceTest {
     }
 
     @Test
-    void create_post_should_throw_exception_when_user_doesnt_exist() {
+    void createPost_throwsException_userDoesntExist() {
         PostDTO postDTO = new PostDTO();
         postDTO.setText("neki_tekst");
         postDTO.setImage("neka_slika");
-        postDTO.setUserId("non_existing");
         assertThrows(IllegalArgumentException.class, ()->{
-            postService.create(postDTO);
+            postService.create(postDTO, "non_existing");
         });
     }
 
     @Test
-    void create_post_should_return_a_post_dto() {
+    void createPost_returnsPostDto_validUser() {
         PostDTO postDTO = new PostDTO();
         postDTO.setText("neki_tekst");
         postDTO.setImage("neka_slika");
-        postDTO.setUserId("1");
 
-        PostDTO returnDTO = postService.create(postDTO);
+        PostDTO returnDTO = postService.create(postDTO, "user1");
         assertEquals(returnDTO.getText(), "created post");
     }
 
 
     @Test
-    void read_post_should_throw_exception_when_post_doesnt_exist() {
+    void readPost_throwsException_invalidPostId() {
         assertThrows(IllegalArgumentException.class, ()->{
             postService.read("non_existing");
         });
     }
 
     @Test
-    void read_post_should_return_post_dto_when_post_exists() {
+    void readPost_returnsPostDto_validPostId() {
         PostDTO returnDTO = postService.read("1");
         assertEquals(returnDTO.getText(), "created post");
     }
 
     @Test
-    void update_invalid_id_should_throw_exception() {
+    void updatePost_throwsException_invalidPostId() {
         PostDTO postDTO = new PostDTO();
         postDTO.setText("neki_tekst1");
         postDTO.setImage("neka_slika1");
@@ -155,7 +155,7 @@ class PostServiceTest {
     }
 
     @Test
-    void update_valid_id_should_work() {
+    void updatePost_returnsUpdatedPostDto_validPostId() {
         PostDTO postDTO = new PostDTO();
         postDTO.setId("1");
         postDTO.setText("novi_tekst");
@@ -164,52 +164,52 @@ class PostServiceTest {
     }
 
     @Test
-    void hide_post_invalid_id_should_throw_exception() {
+    void hidePost_throwsException_invalidPostId() {
         assertThrows(IllegalArgumentException.class, ()->{
             postService.hidePost("non_existing");
         });
     }
 
     @Test
-    void hide_post_valid_id_should_work() {
+    void hidePost_returnsHiddenPostDto_validPostId() {
         PostDTO resultDTO = postService.hidePost("1");
         assertEquals(resultDTO.getStatus(), PostStatus.HIDDEN);
     }
 
     @Test
-    void delete_invalid_id_should_throw_exception() {
+    void deletePost_throwsException_invalidPostId() {
         assertThrows(IllegalArgumentException.class, ()->{
             postService.delete("non_existing");
         });
     }
 
     @Test
-    void list_all_posts_should_return_every_existing_post() {
+    void listAllPosts_returnsAllExistingPosts() {
         List<PostDTO> posts = postService.getAll();
         assertEquals(posts.size(), 3);
     }
 
     @Test
-    void list_all_by_user_should_return_every_existing_post_from_user_if_id_is_valid() {
+    void listAllByUser_returnsEveryUserPost_validId() {
         List<PostDTO> posts = postService.getAllByUser("1");
         assertEquals(posts.size(), 1);
     }
 
     @Test
-    void list_all_by_user_should_throw_exception_if_id_isnt_valid() {
+    void listAllByUser_throwsException_invalidId() {
         assertThrows(IllegalArgumentException.class, ()->{
             postService.getAllByUser("non_existing");
         });
     }
 
     @Test
-    void list_all_for_user_should_return_every_existing_post_for_user_feed_if_id_is_valid() {
-        List<PostDTO> posts = postService.getAllForUser("1");
+    void listAllForUser_returnsAllPostsForUserFeed_validId() {
+        List<PostDTO> posts = postService.getAllForUser("user1");
         assertEquals(posts.size(), 2);
     }
 
     @Test
-    void list_all_for_user_should_throw_exception_if_id_isnt_valid() {
+    void listAllForUser_throwsException_invalidId() {
         assertThrows(IllegalArgumentException.class, ()->{
             postService.getAllForUser("non_existing");
         });

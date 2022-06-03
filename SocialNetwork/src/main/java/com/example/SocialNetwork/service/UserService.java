@@ -87,13 +87,13 @@ public class UserService implements UserDetailsService {
     public User checkIfUserExists(String id) {
         Optional<User> userOptional = userRepository.findById(id);
         return userOptional
-                .orElseThrow(() -> new RuntimeException("User with id: " + id + " doesn't exist!"));
+                .orElseThrow(() -> new IllegalArgumentException("User with id: " + id + " doesn't exist!"));
     }
 
     public User findUser(String username) {
         Optional<User> userOptional = userRepository.findByUsername(username);
         return userOptional
-                .orElseThrow(() -> new RuntimeException("User with username: " + username + " doesn't exist!"));
+                .orElseThrow(() -> new IllegalArgumentException("User with username: " + username + " doesn't exist!"));
     }
 
     @Override

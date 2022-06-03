@@ -88,7 +88,7 @@
 
         <createTable tableName="password_reset_token"
                      remarks="A table to contain all tokens">
-            <column name="id" type="int8">
+            <column name="id" type="bigserial">
                 <constraints nullable="false" unique="true" primaryKey="true"/>
             </column>
             <column name="expiry_date" type="timestamp">

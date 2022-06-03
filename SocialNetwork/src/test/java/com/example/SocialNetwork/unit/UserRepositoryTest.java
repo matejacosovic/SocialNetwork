@@ -24,14 +24,19 @@ class UserRepositoryTest {
     private UserRepository userRepository;
 
     @Test
-    void keyword_that_is_contained_should_return_a_user(){
-        List<User> users =  userRepository.search("adm");
-        assertEquals(users.size(), 1);
-        assertEquals(users.get(0).getEmail(), "mateja.test@vegait.rs");
+    void searchUserNoKeyword_returnsAllUsers(){
+        List<User> users =  userRepository.search("");
+        assertEquals(users.size(), 3);
     }
 
     @Test
-//    void keyword_that_isnt_contained_shouldnt_return_a_user(){
+    void searchUserByKeyword_returnsOneUser(){
+        List<User> users =  userRepository.search("mak");
+        assertEquals(users.size(), 1);
+        assertEquals(users.get(0).getEmail(), "mateja.test1@vegait.rs");
+    }
+
+    @Test
     void searchUserByKeyword_returnsEmptyList(){
         List<User> users =  userRepository.search("axcxa");
         assertEquals(users.size(), 0);

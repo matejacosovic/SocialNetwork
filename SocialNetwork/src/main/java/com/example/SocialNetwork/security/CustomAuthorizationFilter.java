@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -35,40 +36,38 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        if(request.getServletPath().equals("api/v1/login")){
+
+        String authorizationHeader = request.getHeader("Authorization");
+        try {
+            String token = getTokenFromHeader(authorizationHeader);
+            Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT decodedJWT = verifier.verify(token);
+            String username = decodedJWT.getSubject();
+            String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+            Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+            stream(roles).forEach(role -> {
+                authorities.add(new SimpleGrantedAuthority(role));
+            });
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(username, null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             filterChain.doFilter(request, response);
+        } catch (Exception exception) {
+            response.setHeader("error", exception.getMessage());
+            response.setStatus(401);
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Invalid access token, please log in!");
+            response.setContentType("application/json");
+            new ObjectMapper().writeValue(response.getOutputStream(), error);
         }
-        else{
-            String authorizationHeader = request.getHeader("Authorization");
-            if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
-                try{
-                    String token = authorizationHeader.substring("Bearer ".length());
-                    Algorithm algorithm = Algorithm.HMAC256(secret.getBytes());
-                    JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(token);
-                    String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
-                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    stream(roles).forEach(role -> {
-                        authorities.add(new SimpleGrantedAuthority(role));
-                    });
-                    UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(username, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request, response);
-                }
-                catch (Exception exception){
-                    response.setHeader("error", exception.getMessage());
-                    response.setStatus(403);
-                    Map<String, String> error = new HashMap<>();
-                    error.put("error", exception.getMessage());
-                    response.setContentType("application/json");
-                    new ObjectMapper().writeValue(response.getOutputStream(), error);
-                }
-            }
-            else{
-                filterChain.doFilter(request, response);
-            }
+    }
+
+    private String getTokenFromHeader(String header) {
+        if (!StringUtils.hasText(header)) {
+            return null;
+        } else {
+            return header.substring("Bearer ".length());
         }
     }
 }

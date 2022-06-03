@@ -133,7 +133,7 @@ class UserServiceTest {
     }
 
     @Test
-    void create_user_exist_should_save_when_valid_dto_is_sent() {
+    void createUser_returnsUserDto_whenInputIsValid() {
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("doesntexist@gmail.com");
         userForSavingDTO.setPassword("password");
@@ -150,7 +150,7 @@ class UserServiceTest {
     }
 
     @Test
-    void create_user_exist_should_throw_exception_when_username_already_exists() {
+    void createUser_throwsException_whenUsernameExists() {
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setUsername("user1");
 
@@ -160,7 +160,7 @@ class UserServiceTest {
     }
 
     @Test
-    void create_user_exist_should_throw_exception_when_email_already_exists() {
+    void createUser_throwsException_whenEmailExists() {
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("user1@gmail.com");
 
@@ -170,91 +170,91 @@ class UserServiceTest {
     }
 
     @Test
-    void list_users_without_a_search_word_should_return_all_users() {
+    void listUsers_returnsAllUsers_whenNoKeyword() {
         List<UserDTO> users = userService.listUsers("");
         assertEquals(users.size(), 4);
     }
 
     @Test
-    void list_users_with_a_search_word_should_return_one_user() {
+    void listUsers_returnsOneUser_withAKeyword() {
         List<UserDTO> users = userService.listUsers("1");
         assertEquals(users.size(), 1);
         assertEquals(users.get(0).getUsername(), "user1");
     }
 
     @Test
-    void check_if_user_exist_should_return_a_user_for_a_existing_id() {
+    void checkIfUserExists_returnsUser_existingId() {
         User user = userService.checkIfUserExists("1");
         assertEquals(user.getUsername(), "user1");
     }
 
     @Test
-    void check_if_user_exist_should_throw_exception_for_non_existing_id() {
+    void checkIfUserExists_throwsException_nonExistingId() {
         assertThrows(IllegalArgumentException.class, ()->{
             userService.checkIfUserExists("55");
         });
     }
 
     @Test
-    void deactivate_user_exist_should_return_a_user_with_deactivated_status() {
+    void deactivateUser_returnsDeactivatedUser_validId() {
         UserDTO user = userService.deactivateUser("2");
         assertEquals(user.getUsername(), "user2");
         assertEquals(user.getStatus(), UserStatus.DEACTIVATED);
     }
 
     @Test
-    void deactivate_user_exist_should_throw_exception_for_non_existing_id() {
+    void deactivateUser_throwsException_invalidId() {
         assertThrows(IllegalArgumentException.class, ()->{
             userService.deactivateUser("55");
         });
     }
 
     @Test
-    void load_by_username_exist_should_return_user_details_for_a_existing_username() {
+    void loadByUsername_returnsUserDetails_existingUsername() {
         UserDetails user = userService.loadUserByUsername("user1");
         assertEquals(user.getPassword(), "password");
     }
 
     @Test
-    void load_by_username_should_throw_exception_for_non_existing_username() {
+    void loadByUsername_throwsException_nonexistingUsername() {
         assertThrows(UsernameNotFoundException.class, ()->{
             userService.loadUserByUsername("doesntexist");
         });
     }
 
     @Test
-    void load_by_username_should_throw_exception_for_disabled_account() {
+    void loadByUsername_throwsException_disabledAccount() {
         assertThrows(UsernameNotFoundException.class, ()->{
             userService.loadUserByUsername("disabled");
         });
     }
 
     @Test
-    void validate_token_should_return_successful_answer_if_token_is_valid() {
+    void validateToken_returnsSuccessfulAnswer_tokenValid() {
         MessageDTO messageDTO = userService.validatePasswordToken("valid_token");
         assertEquals(messageDTO.getMessage(), "Token is valid!");
     }
 
     @Test
-    void validate_token_should_return_expired_answer_if_token_is_expired() {
+    void validateToken_returnsFailAnswer_tokenExpired() {
         MessageDTO messageDTO = userService.validatePasswordToken("expired_token");
         assertEquals(messageDTO.getMessage(), "Token is expired!");
     }
 
     @Test
-    void validate_token_should_return_does_not_exist_answer_if_token_isnt_present() {
+    void validateToken_returnsFailAnswer_tokenNonExistent() {
         MessageDTO messageDTO = userService.validatePasswordToken("non_existing_token");
         assertEquals(messageDTO.getMessage(), "Token does not exist!");
     }
 
     @Test
-    void forgot_password_should_return_success_if_email_exists() {
+    void forgotPassword_returnsSuccess_emailExists() {
         MessageDTO messageDTO = userService.forgotPassword("user1@gmail.com");
         assertEquals(messageDTO.getMessage(), "Success!");
     }
 
     @Test
-    void forgot_password_should_throw_exception_if_email_does_not_exist() {
+    void forgotPassword_throwsException_emailDoesntExists() {
         assertThrows(IllegalArgumentException.class, ()->{
             userService.forgotPassword("doesntexist@gmail.com");
         });

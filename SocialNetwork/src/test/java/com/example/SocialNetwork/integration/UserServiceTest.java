@@ -1,6 +1,7 @@
 package com.example.SocialNetwork.integration;
 
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.service.UserService;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,27 +29,27 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    void list_users_should_return_all_users_when_keyword_isnt_present(){
+    void listUsers_returnsAllUsers_whenNoKeyword(){
         List<UserDTO> users =  userService.listUsers("");
-        assertEquals(users.size(), 2);
+        assertEquals(users.size(), 3);
         assertEquals(users.get(0).getEmail(), "mateja.test@vegait.rs");
     }
 
     @Test
-    void list_users_should_return_one_user_when_keyword_is_present(){
+    public void listUsers_returnsOneUser_withAKeyword(){
         List<UserDTO> users =  userService.listUsers("mak");
         assertEquals(users.size(), 1);
         assertEquals(users.get(0).getEmail(), "mateja.test1@vegait.rs");
     }
 
     @Test
-    void list_users_should_return_no_users_when_keyword_is_present_but_no_matches(){
+    void listUsers_returnsNoUsers_withAKeywordWithNoMatches(){
         List<UserDTO> users =  userService.listUsers("msadfasdak");
         assertEquals(users.size(), 0);
     }
 
     @Test
-    void create_user_exist_should_throw_exception_when_username_already_exists() {
+    void createUser_throwsException_whenUsernameExists() {
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setUsername("user1");
 
@@ -56,7 +59,7 @@ class UserServiceTest {
     }
 
     @Test
-    void create_user_exist_should_throw_exception_when_email_already_exists() {
+    void createUser_throwsException_whenEmailExists() {
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("mateja.test1@vegait.rs");
 
@@ -66,7 +69,7 @@ class UserServiceTest {
     }
 
     @Test
-    void create_user_exist_should_save_when_valid_dto_is_sent() {
+    void createUser_returnsUserDto_whenInputIsValid() {
         List<UserDTO> usersBeforeAdd =  userService.listUsers("");
         int sizeBeforeAdd = usersBeforeAdd.size();
 
@@ -88,5 +91,79 @@ class UserServiceTest {
         assertEquals(userDTO.getFriends().size(), 0);
         //hashed password
         assertNotEquals("password", userDTO.getPassword());
+    }
+
+    @Test
+    void checkIfUserExists_returnsUser_existingId() {
+        User user = userService.checkIfUserExists("test-id");
+        assertEquals(user.getUsername(), "admin");
+    }
+
+    @Test
+    void checkIfUserExists_throwsException_nonExistingId() {
+        assertThrows(IllegalArgumentException.class, ()->{
+            userService.checkIfUserExists("55");
+        });
+    }
+
+    @Test
+    void deactivateUser_returnsDeactivatedUser_validId() {
+        UserDTO user = userService.deactivateUser("test-id");
+        assertEquals(user.getUsername(), "admin");
+        assertEquals(user.getStatus(), UserStatus.DEACTIVATED);
+    }
+
+    @Test
+    void deactivateUser_throwsException_invalidId() {
+        assertThrows(IllegalArgumentException.class, ()->{
+            userService.deactivateUser("55");
+        });
+    }
+
+    @Test
+    void loadByUsername_returnsUserDetails_existingUsername() {
+        UserDetails user = userService.loadUserByUsername("admin");
+        assertEquals(user.getPassword(), "$2a$12$.yaNGFMfd9ueDqT3LArDwOj6V0Ody4fMlteBIrYgJni0UnCx2gHfS");
+    }
+
+    @Test
+    void loadByUsername_throwsException_nonexistingUsername() {
+        assertThrows(UsernameNotFoundException.class, ()->{
+            userService.loadUserByUsername("doesntexist");
+        });
+    }
+
+    @Test
+    void loadByUsername_throwsException_disabledAccount() {
+        assertThrows(UsernameNotFoundException.class, ()->{
+            userService.loadUserByUsername("maka");
+        });
+    }
+
+    @Test
+    void validateToken_returnsSuccessfulAnswer_tokenValid() {
+        User user = userService.checkIfUserExists("test-id");
+        userService.createPasswordResetTokenForUser(user, "valid_token");
+        MessageDTO messageDTO = userService.validatePasswordToken("valid_token");
+        assertEquals(messageDTO.getMessage(), "Token is valid!");
+    }
+
+    @Test
+    void validateToken_returnsFailAnswer_tokenNonExistent() {
+        MessageDTO messageDTO = userService.validatePasswordToken("non_existing_token");
+        assertEquals(messageDTO.getMessage(), "Token does not exist!");
+    }
+
+    @Test
+    void forgotPassword_returnsSuccess_emailExists() {
+        MessageDTO messageDTO = userService.forgotPassword("mateja.test1@vegait.rs");
+        assertEquals(messageDTO.getMessage(), "Success!");
+    }
+
+    @Test
+    void forgotPassword_throwsException_emailDoesntExists() {
+        assertThrows(IllegalArgumentException.class, ()->{
+            userService.forgotPassword("doesntexist@gmail.com");
+        });
     }
 }
