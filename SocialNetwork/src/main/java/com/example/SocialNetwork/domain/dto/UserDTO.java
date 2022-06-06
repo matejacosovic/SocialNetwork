@@ -2,6 +2,8 @@ package com.example.SocialNetwork.domain.dto;
 
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.enums.UserStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +14,8 @@ import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class UserDTO {
     private String id;
     private String email;
@@ -21,17 +25,5 @@ public class UserDTO {
     private String username;
     private List<String> friends = new ArrayList<>();
     private UserStatus status;
-
-    public UserDTO(User user){
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.name = user.getName();
-        this.surname = user.getSurname();
-        this.username = user.getUsername();
-        this.friends.addAll(user.getFriends().stream().map(User::getUsername).toList());
-        this.friends.addAll(user.getFriendOf().stream().map(User::getUsername).toList());
-        this.status = user.getStatus();
-    }
 
 }

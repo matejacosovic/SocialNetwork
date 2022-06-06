@@ -1,14 +1,16 @@
 package com.example.SocialNetwork.domain;
 
 import com.example.SocialNetwork.domain.enums.PostStatus;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,11 +18,13 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@Builder
+@AllArgsConstructor
 public class Post extends BaseEntity {
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String text;
 
-    @Column(columnDefinition="text")
+    @Column(columnDefinition = "text")
     private String image;
 
     @CreatedDate
