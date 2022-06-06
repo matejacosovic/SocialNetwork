@@ -4,9 +4,11 @@ import com.example.SocialNetwork.domain.Post;
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.PostDTO;
 import com.example.SocialNetwork.domain.enums.PostStatus;
+import com.example.SocialNetwork.mapper.PostMapper;
 import com.example.SocialNetwork.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -22,20 +24,21 @@ public class PostService {
     private final PostRepository postRepository;
     private final UserService userService;
 
+    private final PostMapper postMapper;
+
     public PostDTO create(PostDTO postDTO, String usernameFromJwt) {
         User user = userService.findUser(usernameFromJwt);
 
-        Post post = new Post(postDTO.getText(),
+        Post post = postMapper.toNewPost(postDTO.getText(),
                 postDTO.getImage(),
-                user
-        );
+                user);
 
-        return new PostDTO(postRepository.save(post));
+        return postMapper.toPostDto(postRepository.save(post));
     }
 
     public PostDTO read(String id) {
         Post post = checkIfPostExists(id);
-        return new PostDTO(post);
+        return postMapper.toPostDto(post);
     }
 
     public PostDTO update(PostDTO postDTO) {
@@ -43,19 +46,19 @@ public class PostService {
         post.setText(postDTO.getText());
         post.setImage(postDTO.getImage());
         postRepository.save(post);
-        return new PostDTO(post);
+        return postMapper.toPostDto(post);
     }
 
     public PostDTO delete(String id) {
         Post post = checkIfPostExists(id);
         post.setDeleted(true);
         postRepository.save(post);
-        return new PostDTO(post);
+        return postMapper.toPostDto(post);
     }
 
-    public Post checkIfPostExists(String id){
+    public Post checkIfPostExists(String id) {
         Optional<Post> optionalPost = postRepository.findById(id);
-        if(optionalPost.isEmpty()){
+        if (optionalPost.isEmpty()) {
             throw new IllegalArgumentException("There is no post with the given id: " + id);
         }
         return optionalPost.get();
@@ -64,7 +67,7 @@ public class PostService {
     public List<PostDTO> getAll() {
         return postRepository.findAll()
                 .stream()
-                .map(PostDTO::new)
+                .map(postMapper::toPostDto)
                 .collect(Collectors.toList());
     }
 
@@ -72,7 +75,7 @@ public class PostService {
         User user = userService.checkIfUserExists(userId);
         return postRepository.findByUser(user)
                 .stream()
-                .map(PostDTO::new)
+                .map(postMapper::toPostDto)
                 .collect(Collectors.toList());
     }
 
@@ -93,7 +96,7 @@ public class PostService {
 
         return result
                 .stream()
-                .map(PostDTO::new)
+                .map(postMapper::toPostDto)
                 .collect(Collectors.toList());
     }
 
@@ -101,6 +104,6 @@ public class PostService {
         Post post = checkIfPostExists(postId);
         post.setStatus(PostStatus.HIDDEN);
         postRepository.save(post);
-        return new PostDTO(post);
+        return postMapper.toPostDto(post);
     }
 }

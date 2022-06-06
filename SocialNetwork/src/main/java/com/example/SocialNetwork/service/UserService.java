@@ -6,6 +6,7 @@ import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
+import com.example.SocialNetwork.mapper.UserMapper;
 import com.example.SocialNetwork.repository.PasswordTokenRepository;
 import com.example.SocialNetwork.repository.RoleRepository;
 import com.example.SocialNetwork.repository.UserRepository;
@@ -28,11 +29,11 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordTokenRepository passwordTokenRepository;
     private final MailSenderService mailSenderService;
 
+    private final UserMapper userMapper;
     public UserDTO create(UserDTO userDTO) {
         Optional<User> userOptionalEmail = userRepository.findByEmail(userDTO.getEmail());
         if (userOptionalEmail.isPresent()) {
@@ -44,22 +45,16 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("A user with this username already exists!");
         }
 
-        User user = new User(userDTO.getEmail(),
-                passwordEncoder.encode(userDTO.getPassword()),
-                userDTO.getName(),
-                userDTO.getSurname(),
-                userDTO.getUsername());
-
-        user.getRoles().add(roleRepository.findByName("ROLE_APP_USER"));
-
+        User user = userMapper.toNewUser(userDTO);
         userRepository.save(user);
-        return new UserDTO(user);
+
+        return userMapper.toUserDTO(user);
     }
 
     public List<UserDTO> listUsers(String keyword) {
         return userRepository.search(keyword.trim().toLowerCase())
                 .stream()
-                .map(UserDTO::new)
+                .map(userMapper::toUserDTO)
                 .collect(Collectors.toList());
     }
 
@@ -71,7 +66,7 @@ public class UserService implements UserDetailsService {
         connector.addFriend(connected);
         userRepository.save(connector);
 
-        return new UserDTO(connector);
+        return userMapper.toUserDTO(connector);
     }
 
     public UserDTO removeConnect(String who, String withWho) {
@@ -81,7 +76,7 @@ public class UserService implements UserDetailsService {
         connector.removeFriend(connected);
         userRepository.save(connector);
 
-        return new UserDTO(connector);
+        return userMapper.toUserDTO(connector);
     }
 
     public User checkIfUserExists(String id) {
@@ -176,7 +171,7 @@ public class UserService implements UserDetailsService {
         User user = checkIfUserExists(userId);
         user.setStatus(UserStatus.DEACTIVATED);
         userRepository.save(user);
-        return new UserDTO(user);
+        return userMapper.toUserDTO(user);
     }
 }
 
