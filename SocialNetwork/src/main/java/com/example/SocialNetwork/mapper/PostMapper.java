@@ -23,7 +23,7 @@ public class PostMapper {
                 .build();
     }
 
-    public Post toNewPost(String text, String image, User user){
+    public Post toPost(String text, String image, User user){
         return Post
                 .builder()
                 .text(text)
@@ -31,5 +31,10 @@ public class PostMapper {
                 .status(PostStatus.VISIBLE)
                 .user(user)
                 .build();
+    }
+
+    public void updatePost(Post post, PostDTO postDTO) {
+        post.setText(postDTO.getText());
+        post.setImage(postDTO.getImage());
     }
 }

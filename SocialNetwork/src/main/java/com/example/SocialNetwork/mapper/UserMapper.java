@@ -20,8 +20,8 @@ public class UserMapper {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User toNewUser(UserDTO userDTO) {
-        User u =  User
+    public User toUser(UserDTO userDTO) {
+        return User
                 .builder()
                 .name(userDTO.getName())
                 .surname(userDTO.getSurname())
@@ -33,7 +33,6 @@ public class UserMapper {
                 .friendOf(new HashSet<>())
                 .status(UserStatus.ACTIVATED)
                 .build();
-        return u;
     }
 
     public UserDTO toUserDTO(User user) {

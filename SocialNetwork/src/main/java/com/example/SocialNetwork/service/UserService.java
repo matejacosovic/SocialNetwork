@@ -45,7 +45,7 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("A user with this username already exists!");
         }
 
-        User user = userMapper.toNewUser(userDTO);
+        User user = userMapper.toUser(userDTO);
         userRepository.save(user);
 
         return userMapper.toUserDTO(user);

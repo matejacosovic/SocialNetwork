@@ -29,7 +29,7 @@ public class PostService {
     public PostDTO create(PostDTO postDTO, String usernameFromJwt) {
         User user = userService.findUser(usernameFromJwt);
 
-        Post post = postMapper.toNewPost(postDTO.getText(),
+        Post post = postMapper.toPost(postDTO.getText(),
                 postDTO.getImage(),
                 user);
 
@@ -43,8 +43,7 @@ public class PostService {
 
     public PostDTO update(PostDTO postDTO) {
         Post post = checkIfPostExists(postDTO.getId());
-        post.setText(postDTO.getText());
-        post.setImage(postDTO.getImage());
+        postMapper.updatePost(post, postDTO);
         postRepository.save(post);
         return postMapper.toPostDto(post);
     }
