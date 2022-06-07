@@ -39,6 +39,19 @@ public class PostControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
+    public void createPost_withAccessTokenInvalidRequestBody_statusIsBadRequest() throws Exception {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setImage("some_img");
+
+        this.mvc.perform(post("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.text", equalTo("Text is mandatory")));
+    }
+
+    @Test
     public void readPost_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/posts/1")
                         .header("Authorization", "Bearer invalidToken"))
@@ -85,6 +98,19 @@ public class PostControllerTest extends AbstractControllerTest {
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text", equalTo("neki_tekst")));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
+    public void updatePost_withAccessTokenInvalidRequestBody_statusIsBadRequest() throws Exception {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setImage("some_img");
+
+        this.mvc.perform(put("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.text", equalTo("Text is mandatory")));
     }
 
     @Test

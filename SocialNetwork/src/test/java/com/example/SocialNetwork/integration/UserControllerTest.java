@@ -53,7 +53,7 @@ public class UserControllerTest extends AbstractControllerTest {
 
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("doesntexist@gmail.com");
-        userForSavingDTO.setPassword("password");
+        userForSavingDTO.setPassword("Password123!");
         userForSavingDTO.setName("Valid");
         userForSavingDTO.setSurname("Validic");
         userForSavingDTO.setUsername("doesntexist");
@@ -66,6 +66,60 @@ public class UserControllerTest extends AbstractControllerTest {
 
     }
 
+    @Test
+    public void createUser_invalidRequestBody_statusIsBadRequest() throws Exception {
+
+        UserDTO userForSavingDTO = new UserDTO();
+        userForSavingDTO.setEmail(" ");
+        userForSavingDTO.setPassword("password");
+        userForSavingDTO.setName("Valid");
+        userForSavingDTO.setSurname("Validic");
+        userForSavingDTO.setUsername("doesntexist");
+
+        this.mvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userForSavingDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.email", equalTo("Email is mandatory")));
+
+    }
+
+    @Test
+    public void createUser_invalidEmailFormat_statusIsConflict() throws Exception {
+
+        UserDTO userForSavingDTO = new UserDTO();
+        userForSavingDTO.setEmail("invalidformat");
+        userForSavingDTO.setPassword("password");
+        userForSavingDTO.setName("Valid");
+        userForSavingDTO.setSurname("Validic");
+        userForSavingDTO.setUsername("doesntexist");
+
+        this.mvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userForSavingDTO)))
+                .andExpect(status().isConflict())
+                .andExpect(content().string("Email isn't following the valid pattern!"));
+
+    }
+
+    @Test
+    public void createUser_invalidPasswordFormat_statusIsConflict() throws Exception {
+
+        UserDTO userForSavingDTO = new UserDTO();
+        userForSavingDTO.setEmail("valid@email.com");
+        userForSavingDTO.setPassword("password");
+        userForSavingDTO.setName("Valid");
+        userForSavingDTO.setSurname("Validic");
+        userForSavingDTO.setUsername("doesntexist");
+
+        this.mvc.perform(post("/api/v1/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userForSavingDTO)))
+                .andExpect(status().isConflict())
+                .andExpect(content()
+                        .string("Password must contain at least one upper case, one lower case, one digit, one special character and be eight characters long!"));
+
+    }
     @Test
     public void createUser_emailAlreadyExists_throwsException() throws Exception {
 
@@ -153,6 +207,16 @@ public class UserControllerTest extends AbstractControllerTest {
                 .andExpect(jsonPath("$.message", equalTo("Successfully changed password!")));
     }
 
+    @Test
+    public void changePassword_invalidReqeustBody_statusIsBadRequest() throws Exception {
+        PasswordDTO passwordDTO = new PasswordDTO();
+        passwordDTO.setToken("valid");
+        this.mvc.perform(post("/api/v1/users/changePassword")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(passwordDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.newPassword", equalTo("New password is mandatory")));
+    }
 
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})

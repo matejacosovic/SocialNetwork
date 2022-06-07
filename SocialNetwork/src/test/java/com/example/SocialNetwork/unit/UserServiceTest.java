@@ -136,7 +136,7 @@ class UserServiceTest {
     void createUser_returnsUserDto_whenInputIsValid() {
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("doesntexist@gmail.com");
-        userForSavingDTO.setPassword("password");
+        userForSavingDTO.setPassword("Password123!");
         userForSavingDTO.setName("Valid");
         userForSavingDTO.setSurname("Validic");
         userForSavingDTO.setUsername("doesntexist");
