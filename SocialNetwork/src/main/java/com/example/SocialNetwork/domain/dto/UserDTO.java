@@ -32,4 +32,11 @@ public class UserDTO {
     private List<String> friends = new ArrayList<>();
     private UserStatus status;
 
+    public UserDTO(String email, String password, String name, String surname, String username) {
+        this.email = email;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.username = username;
+    }
 }

@@ -5,8 +5,8 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
 public class AuthControllerTest extends AbstractControllerTest {
 
@@ -31,7 +31,7 @@ public class AuthControllerTest extends AbstractControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(authDTO)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(content().string("Bad credentials"));
+                .andExpect(jsonPath("$.debugMessage", equalTo("Bad credentials")));
 
     }
 

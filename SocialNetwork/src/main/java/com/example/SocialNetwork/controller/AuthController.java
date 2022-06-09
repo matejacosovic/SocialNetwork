@@ -52,12 +52,12 @@ public class AuthController {
 
         String accessToken = JWT.create()
                 .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis()+Integer.valueOf(tokenDuration)))
+                .withExpiresAt(new Date(System.currentTimeMillis()+tokenDuration))
                 .withIssuer(appName)
                 .withClaim("roles", user.getAuthorities()
                         .stream()
                         .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.toList()))
+                        .toList())
                 .sign(algorithm);
 
         return ResponseEntity.ok(new AccessTokenDTO(accessToken));

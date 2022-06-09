@@ -67,7 +67,7 @@ public class PostService {
         return postRepository.findAll()
                 .stream()
                 .map(postMapper::toPostDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<PostDTO> getAllByUser(String userId) {
@@ -75,7 +75,7 @@ public class PostService {
         return postRepository.findByUser(user)
                 .stream()
                 .map(postMapper::toPostDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<PostDTO> getAllForUser(String username) {
@@ -96,7 +96,7 @@ public class PostService {
         return result
                 .stream()
                 .map(postMapper::toPostDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public PostDTO hidePost(String postId) {
