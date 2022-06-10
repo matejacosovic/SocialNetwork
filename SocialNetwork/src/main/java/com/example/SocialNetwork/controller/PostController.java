@@ -64,7 +64,7 @@ public class PostController {
 
     @PutMapping(value = "/hide")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<PostDTO> hidePost(@RequestParam(name = "postId") String postId) {
-        return ResponseEntity.ok(postService.hidePost(postId));
+    public ResponseEntity<PostDTO> hidePost(@RequestBody PostDTO dto) {
+        return ResponseEntity.ok(postService.hidePost(dto.getId()));
     }
 }
