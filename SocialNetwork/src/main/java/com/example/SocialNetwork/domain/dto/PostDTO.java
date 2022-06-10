@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Data
@@ -15,6 +17,7 @@ import java.util.Date;
 public class PostDTO {
     private String id;
     private String userId;
+    @NotBlank(message = "Text is mandatory")
     private String text;
     private String image;
     private Date dateCreated;

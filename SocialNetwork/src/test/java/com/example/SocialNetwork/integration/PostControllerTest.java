@@ -39,6 +39,19 @@ public class PostControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
+    public void createPost_withAccessTokenInvalidRequestBody_statusIsBadRequest() throws Exception {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setImage("some_img");
+
+        this.mvc.perform(post("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.debugMessage", equalTo("Text is mandatory")));
+    }
+
+    @Test
     public void readPost_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/posts/1")
                         .header("Authorization", "Bearer invalidToken"))
@@ -58,7 +71,7 @@ public class PostControllerTest extends AbstractControllerTest {
     public void readPost_withAccessTokenAndInvalidPostId_throwsException() throws Exception {
         this.mvc.perform(get("/api/v1/posts/14"))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("There is no post with the given id: 14"));
+                .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: 14")));
     }
 
     @Test
@@ -89,6 +102,19 @@ public class PostControllerTest extends AbstractControllerTest {
 
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
+    public void updatePost_withAccessTokenInvalidRequestBody_statusIsBadRequest() throws Exception {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setImage("some_img");
+
+        this.mvc.perform(put("/api/v1/posts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.debugMessage", equalTo("Text is mandatory")));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void updatePost_withAccessTokenAndInvalidPostId_throwsException() throws Exception {
         PostDTO postDTO = new PostDTO();
         postDTO.setText("neki_tekst");
@@ -99,7 +125,7 @@ public class PostControllerTest extends AbstractControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("There is no post with the given id: test-post1241"));
+                .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: test-post1241")));
     }
 
     @Test
@@ -123,7 +149,7 @@ public class PostControllerTest extends AbstractControllerTest {
     public void deletePost_withAccessTokenAndInvalidPostId_throwsException() throws Exception {
         this.mvc.perform(delete("/api/v1/posts/13412"))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("There is no post with the given id: 13412"));
+                .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: 13412")));
     }
 
     @Test
@@ -165,7 +191,7 @@ public class PostControllerTest extends AbstractControllerTest {
         this.mvc.perform(get("/api/v1/posts/wall")
                         .param("userId", "adadadsmin"))
                 .andExpect(status().isConflict())
-                .andExpect(content().string("User with id: adadadsmin doesn't exist!"));
+                .andExpect(jsonPath("$.debugMessage", equalTo("User with id: adadadsmin doesn't exist!")));
     }
 
     @Test
@@ -215,7 +241,7 @@ public class PostControllerTest extends AbstractControllerTest {
                         .param("postId", "adadadsmin")
                 )
                 .andExpect(status().isConflict())
-                .andExpect(content().string("There is no post with the given id: adadadsmin"));
+                .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: adadadsmin")));
     }
 
     @Test

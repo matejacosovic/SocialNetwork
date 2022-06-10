@@ -18,6 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
 import static com.example.SocialNetwork.security.AuthenticationUtil.getUsernameFromJwt;
 import java.util.List;
 
@@ -29,7 +32,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDTO> create(@RequestBody UserDTO userDTO){
+    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO){
         return ResponseEntity.ok(userService.create(userDTO));
     }
 
@@ -57,7 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/changePassword")
-    public ResponseEntity<MessageDTO> changePassword(@RequestBody PasswordDTO passwordDTO) {
+    public ResponseEntity<MessageDTO> changePassword(@Valid @RequestBody PasswordDTO passwordDTO) {
         return ResponseEntity.ok(userService.changePassword(passwordDTO));
     }
 

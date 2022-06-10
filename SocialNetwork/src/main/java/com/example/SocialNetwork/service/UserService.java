@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +36,17 @@ public class UserService implements UserDetailsService {
     private final MailSenderService mailSenderService;
 
     private final UserMapper userMapper;
+
+    private final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+    private final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
     public UserDTO create(UserDTO userDTO) {
+        validateUserDto(userDTO);
+        User user = userMapper.toUser(userDTO);
+        userRepository.save(user);
+        return userMapper.toUserDTO(user);
+    }
+
+    private void validateUserDto(UserDTO userDTO) {
         Optional<User> userOptionalEmail = userRepository.findByEmail(userDTO.getEmail());
         if (userOptionalEmail.isPresent()) {
             throw new IllegalArgumentException("A user with this email already exists!");
@@ -45,10 +57,20 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("A user with this username already exists!");
         }
 
-        User user = userMapper.toUser(userDTO);
-        userRepository.save(user);
+        if(!regexMatches(userDTO.getEmail(), EMAIL_REGEX)){
+            throw new IllegalArgumentException("Email isn't following the valid pattern!");
+        }
 
-        return userMapper.toUserDTO(user);
+        if(!regexMatches(userDTO.getPassword(), PASSWORD_REGEX)){
+            throw new IllegalArgumentException("Password must contain at least one upper case, one lower case, one digit, one special character and be eight characters long!");
+        }
+
+    }
+
+    private boolean regexMatches(String stringForValidation, String regex) {
+        return Pattern.compile(regex)
+                .matcher(stringForValidation)
+                .matches();
     }
 
     public List<UserDTO> listUsers(String keyword) {

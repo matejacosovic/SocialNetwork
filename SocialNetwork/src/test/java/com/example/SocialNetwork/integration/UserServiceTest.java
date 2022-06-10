@@ -51,7 +51,7 @@ class UserServiceTest {
     @Test
     void createUser_throwsException_whenUsernameExists() {
         UserDTO userForSavingDTO = new UserDTO();
-        userForSavingDTO.setUsername("user1");
+        userForSavingDTO.setUsername("user");
 
         assertThrows(IllegalArgumentException.class, ()->{
             userService.create(userForSavingDTO);
@@ -75,7 +75,7 @@ class UserServiceTest {
 
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("doesntexist@gmail.com");
-        userForSavingDTO.setPassword("password");
+        userForSavingDTO.setPassword("Password123!");
         userForSavingDTO.setName("Valid");
         userForSavingDTO.setSurname("Validic");
         userForSavingDTO.setUsername("doesntexist");

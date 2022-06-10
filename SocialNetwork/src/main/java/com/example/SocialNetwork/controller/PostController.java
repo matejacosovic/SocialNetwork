@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 import static com.example.SocialNetwork.security.AuthenticationUtil.getUsernameFromJwt;
@@ -21,7 +22,7 @@ public class PostController {
 
     @PostMapping
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<PostDTO> create(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<PostDTO> create(@Valid @RequestBody PostDTO postDTO) {
         return ResponseEntity.ok(postService.create(postDTO, getUsernameFromJwt()));
     }
 
@@ -33,7 +34,7 @@ public class PostController {
 
     @PutMapping
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<PostDTO> update(@RequestBody PostDTO postDTO) {
+    public ResponseEntity<PostDTO> update(@Valid @RequestBody PostDTO postDTO) {
         return ResponseEntity.ok(postService.update(postDTO));
     }
 
