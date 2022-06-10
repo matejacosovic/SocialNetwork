@@ -26,19 +26,19 @@ class UserRepositoryTest {
     @Test
     void searchUserNoKeyword_returnsAllUsers(){
         List<User> users =  userRepository.search("");
-        assertEquals(users.size(), 3);
+        assertEquals(3, users.size());
     }
 
     @Test
     void searchUserByKeyword_returnsOneUser(){
         List<User> users =  userRepository.search("mak");
-        assertEquals(users.size(), 1);
-        assertEquals(users.get(0).getEmail(), "mateja.test1@vegait.rs");
+        assertEquals(1, users.size());
+        assertEquals("mateja.test1@vegait.rs", users.get(0).getEmail());
     }
 
     @Test
     void searchUserByKeyword_returnsEmptyList(){
         List<User> users =  userRepository.search("axcxa");
-        assertEquals(users.size(), 0);
+        assertEquals(0, users.size());
     }
 }

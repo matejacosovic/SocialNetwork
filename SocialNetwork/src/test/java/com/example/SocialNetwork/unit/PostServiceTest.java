@@ -126,7 +126,7 @@ class PostServiceTest {
         postDTO.setImage("neka_slika");
 
         PostDTO returnDTO = postService.create(postDTO, "user1");
-        assertEquals(returnDTO.getText(), "created post");
+        assertEquals("created post", returnDTO.getText());
     }
 
 
@@ -140,7 +140,7 @@ class PostServiceTest {
     @Test
     void readPost_returnsPostDto_validPostId() {
         PostDTO returnDTO = postService.read("1");
-        assertEquals(returnDTO.getText(), "created post");
+        assertEquals("created post", returnDTO.getText());
     }
 
     @Test
@@ -160,7 +160,7 @@ class PostServiceTest {
         postDTO.setId("1");
         postDTO.setText("novi_tekst");
         PostDTO resultDTO = postService.update(postDTO);
-        assertEquals(resultDTO.getText(), "novi_tekst");
+        assertEquals("novi_tekst", resultDTO.getText());
     }
 
     @Test
@@ -173,7 +173,7 @@ class PostServiceTest {
     @Test
     void hidePost_returnsHiddenPostDto_validPostId() {
         PostDTO resultDTO = postService.hidePost("1");
-        assertEquals(resultDTO.getStatus(), PostStatus.HIDDEN);
+        assertEquals(PostStatus.HIDDEN, resultDTO.getStatus());
     }
 
     @Test
@@ -186,13 +186,13 @@ class PostServiceTest {
     @Test
     void listAllPosts_returnsAllExistingPosts() {
         List<PostDTO> posts = postService.getAll();
-        assertEquals(posts.size(), 3);
+        assertEquals(3, posts.size());
     }
 
     @Test
     void listAllByUser_returnsEveryUserPost_validId() {
         List<PostDTO> posts = postService.getAllByUser("1");
-        assertEquals(posts.size(), 1);
+        assertEquals(1, posts.size());
     }
 
     @Test
@@ -205,7 +205,7 @@ class PostServiceTest {
     @Test
     void listAllForUser_returnsAllPostsForUserFeed_validId() {
         List<PostDTO> posts = postService.getAllForUser("user1");
-        assertEquals(posts.size(), 2);
+        assertEquals(2, posts.size());
     }
 
     @Test

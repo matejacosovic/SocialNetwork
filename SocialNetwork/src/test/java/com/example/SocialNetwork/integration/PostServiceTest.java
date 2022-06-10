@@ -42,7 +42,7 @@ class PostServiceTest {
         postDTO.setImage("someimg");
 
         PostDTO returnDTO = postService.create(postDTO, "admin");
-        assertEquals(returnDTO.getText(), "sometext");
+        assertEquals("sometext", returnDTO.getText());
     }
 
     @Test
@@ -55,7 +55,7 @@ class PostServiceTest {
     @Test
     void readPost_returnsPostDto_validPostId() {
         PostDTO returnDTO = postService.read("test-post1");
-        assertEquals(returnDTO.getText(), "test text1");
+        assertEquals("test text1", returnDTO.getText());
     }
 
     @Test
@@ -76,7 +76,7 @@ class PostServiceTest {
         postDTO.setText("newtext");
         postService.update(postDTO);
         PostDTO updatedDTO = postService.read("test-post1");
-        assertEquals(updatedDTO.getText(), "newtext");
+        assertEquals("newtext", updatedDTO.getText());
     }
 
     @Test
@@ -90,7 +90,7 @@ class PostServiceTest {
     void hidePost_returnsHiddenPostDto_validPostId() {
         postService.hidePost("test-post1");
         PostDTO updatedDTO = postService.read("test-post1");
-        assertEquals(updatedDTO.getStatus(), PostStatus.HIDDEN);
+        assertEquals(PostStatus.HIDDEN, updatedDTO.getStatus());
     }
 
     @Test
@@ -104,19 +104,19 @@ class PostServiceTest {
     void deletePost_returnsDeletedPostDto_validPostId() {
         postService.delete("test-post1");
         List<PostDTO> allPosts = postService.getAll();
-        assertEquals(allPosts.size(), 2);
+        assertEquals(2, allPosts.size());
     }
 
     @Test
     void listAllPosts_returnsAllExistingPosts() {
         List<PostDTO> posts = postService.getAll();
-        assertEquals(posts.size(), 3);
+        assertEquals(3, posts.size());
     }
 
     @Test
     void listAllByUser_returnsEveryUserPost_validId() {
         List<PostDTO> posts = postService.getAllByUser("test-id");
-        assertEquals(posts.size(), 2);
+        assertEquals(2, posts.size());
     }
 
     @Test
@@ -129,7 +129,7 @@ class PostServiceTest {
     @Test
     void listAllForUser_returnsAllPostsForUserFeed_validId() {
         List<PostDTO> posts = postService.getAllForUser("admin");
-        assertEquals(posts.size(), 3);
+        assertEquals(3, posts.size());
     }
 
     @Test
