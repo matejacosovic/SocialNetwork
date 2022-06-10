@@ -142,11 +142,11 @@ class UserServiceTest {
         userForSavingDTO.setUsername("doesntexist");
 
         UserDTO userDTO = userService.create(userForSavingDTO);
-        assertEquals(userDTO.getUsername(), "doesntexist");
-        assertEquals(userDTO.getStatus(), UserStatus.ACTIVATED);
-        assertEquals(userDTO.getFriends().size(), 0);
+        assertEquals("doesntexist", userDTO.getUsername());
+        assertEquals(UserStatus.ACTIVATED, userDTO.getStatus());
+        assertEquals(0, userDTO.getFriends().size());
         //hashed password
-        assertNotEquals("password", userDTO.getPassword());
+        assertNotEquals(userDTO.getPassword(),"password");
     }
 
     @Test
@@ -172,20 +172,20 @@ class UserServiceTest {
     @Test
     void listUsers_returnsAllUsers_whenNoKeyword() {
         List<UserDTO> users = userService.listUsers("");
-        assertEquals(users.size(), 4);
+        assertEquals(4, users.size());
     }
 
     @Test
     void listUsers_returnsOneUser_withAKeyword() {
         List<UserDTO> users = userService.listUsers("1");
-        assertEquals(users.size(), 1);
-        assertEquals(users.get(0).getUsername(), "user1");
+        assertEquals(1, users.size());
+        assertEquals("user1", users.get(0).getUsername());
     }
 
     @Test
     void checkIfUserExists_returnsUser_existingId() {
         User user = userService.checkIfUserExists("1");
-        assertEquals(user.getUsername(), "user1");
+        assertEquals("user1", user.getUsername());
     }
 
     @Test
@@ -198,8 +198,8 @@ class UserServiceTest {
     @Test
     void deactivateUser_returnsDeactivatedUser_validId() {
         UserDTO user = userService.deactivateUser("2");
-        assertEquals(user.getUsername(), "user2");
-        assertEquals(user.getStatus(), UserStatus.DEACTIVATED);
+        assertEquals("user2", user.getUsername());
+        assertEquals(UserStatus.DEACTIVATED, user.getStatus());
     }
 
     @Test
@@ -212,7 +212,7 @@ class UserServiceTest {
     @Test
     void loadByUsername_returnsUserDetails_existingUsername() {
         UserDetails user = userService.loadUserByUsername("user1");
-        assertEquals(user.getPassword(), "password");
+        assertEquals("password", user.getPassword());
     }
 
     @Test
@@ -232,25 +232,25 @@ class UserServiceTest {
     @Test
     void validateToken_returnsSuccessfulAnswer_tokenValid() {
         MessageDTO messageDTO = userService.validatePasswordToken("valid_token");
-        assertEquals(messageDTO.getMessage(), "Token is valid!");
+        assertEquals("Token is valid!", messageDTO.getMessage());
     }
 
     @Test
     void validateToken_returnsFailAnswer_tokenExpired() {
         MessageDTO messageDTO = userService.validatePasswordToken("expired_token");
-        assertEquals(messageDTO.getMessage(), "Token is expired!");
+        assertEquals("Token is expired!", messageDTO.getMessage());
     }
 
     @Test
     void validateToken_returnsFailAnswer_tokenNonExistent() {
         MessageDTO messageDTO = userService.validatePasswordToken("non_existing_token");
-        assertEquals(messageDTO.getMessage(), "Token does not exist!");
+        assertEquals("Token does not exist!", messageDTO.getMessage());
     }
 
     @Test
     void forgotPassword_returnsSuccess_emailExists() {
         MessageDTO messageDTO = userService.forgotPassword("user1@gmail.com");
-        assertEquals(messageDTO.getMessage(), "Success!");
+        assertEquals("Success!", messageDTO.getMessage());
     }
 
     @Test
@@ -264,13 +264,13 @@ class UserServiceTest {
     void change_password_should_throw_exception_if_token_is_invalid() {
         PasswordDTO passwordDTO = new PasswordDTO("non_existing_token", "nova");
         MessageDTO messageDTO = userService.changePassword(passwordDTO);
-        assertEquals(messageDTO.getMessage(), "Token is not valid!");
+        assertEquals("Token is not valid!", messageDTO.getMessage());
     }
 
     @Test
     void change_password_should_return_success_for_valid_token() {
         PasswordDTO passwordDTO = new PasswordDTO("valid_token", "nova");
         MessageDTO messageDTO = userService.changePassword(passwordDTO);
-        assertEquals(messageDTO.getMessage(), "Successfully changed password!");
+        assertEquals("Successfully changed password!", messageDTO.getMessage());
     }
 }

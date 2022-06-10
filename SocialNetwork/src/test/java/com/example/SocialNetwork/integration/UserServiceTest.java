@@ -31,21 +31,21 @@ class UserServiceTest {
     @Test
     void listUsers_returnsAllUsers_whenNoKeyword(){
         List<UserDTO> users =  userService.listUsers("");
-        assertEquals(users.size(), 3);
-        assertEquals(users.get(0).getEmail(), "mateja.test@vegait.rs");
+        assertEquals(3, users.size());
+        assertEquals("mateja.test@vegait.rs", users.get(0).getEmail());
     }
 
     @Test
     public void listUsers_returnsOneUser_withAKeyword(){
         List<UserDTO> users =  userService.listUsers("mak");
-        assertEquals(users.size(), 1);
-        assertEquals(users.get(0).getEmail(), "mateja.test1@vegait.rs");
+        assertEquals(1, users.size());
+        assertEquals("mateja.test1@vegait.rs", users.get(0).getEmail());
     }
 
     @Test
     void listUsers_returnsNoUsers_withAKeywordWithNoMatches(){
         List<UserDTO> users =  userService.listUsers("msadfasdak");
-        assertEquals(users.size(), 0);
+        assertEquals(0, users.size());
     }
 
     @Test
@@ -84,19 +84,19 @@ class UserServiceTest {
 
         List<UserDTO> users =  userService.listUsers("");
 
-        assertEquals(sizeBeforeAdd+1, users.size());
+        assertEquals( users.size(), sizeBeforeAdd+1);
 
-        assertEquals(userDTO.getUsername(), "doesntexist");
-        assertEquals(userDTO.getStatus(), UserStatus.ACTIVATED);
-        assertEquals(userDTO.getFriends().size(), 0);
+        assertEquals("doesntexist", userDTO.getUsername());
+        assertEquals(UserStatus.ACTIVATED, userDTO.getStatus());
+        assertEquals(0, userDTO.getFriends().size());
         //hashed password
-        assertNotEquals("password", userDTO.getPassword());
+        assertNotEquals(userDTO.getPassword(), "password");
     }
 
     @Test
     void checkIfUserExists_returnsUser_existingId() {
         User user = userService.checkIfUserExists("test-id");
-        assertEquals(user.getUsername(), "admin");
+        assertEquals("admin", user.getUsername());
     }
 
     @Test
@@ -110,7 +110,7 @@ class UserServiceTest {
     void deactivateUser_returnsDeactivatedUser_validId() {
         UserDTO user = userService.deactivateUser("test-id");
         assertEquals(user.getUsername(), "admin");
-        assertEquals(user.getStatus(), UserStatus.DEACTIVATED);
+        assertEquals(UserStatus.DEACTIVATED, user.getStatus());
     }
 
     @Test
@@ -123,7 +123,7 @@ class UserServiceTest {
     @Test
     void loadByUsername_returnsUserDetails_existingUsername() {
         UserDetails user = userService.loadUserByUsername("admin");
-        assertEquals(user.getPassword(), "$2a$12$.yaNGFMfd9ueDqT3LArDwOj6V0Ody4fMlteBIrYgJni0UnCx2gHfS");
+        assertEquals("$2a$12$.yaNGFMfd9ueDqT3LArDwOj6V0Ody4fMlteBIrYgJni0UnCx2gHfS", user.getPassword());
     }
 
     @Test
@@ -145,19 +145,19 @@ class UserServiceTest {
         User user = userService.checkIfUserExists("test-id");
         userService.createPasswordResetTokenForUser(user, "valid_token");
         MessageDTO messageDTO = userService.validatePasswordToken("valid_token");
-        assertEquals(messageDTO.getMessage(), "Token is valid!");
+        assertEquals("Token is valid!", messageDTO.getMessage());
     }
 
     @Test
     void validateToken_returnsFailAnswer_tokenNonExistent() {
         MessageDTO messageDTO = userService.validatePasswordToken("non_existing_token");
-        assertEquals(messageDTO.getMessage(), "Token does not exist!");
+        assertEquals("Token does not exist!", messageDTO.getMessage());
     }
 
     @Test
     void forgotPassword_returnsSuccess_emailExists() {
         MessageDTO messageDTO = userService.forgotPassword("mateja.test1@vegait.rs");
-        assertEquals(messageDTO.getMessage(), "Success!");
+        assertEquals("Success!", messageDTO.getMessage());
     }
 
     @Test

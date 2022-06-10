@@ -77,7 +77,7 @@ public class UserService implements UserDetailsService {
         return userRepository.search(keyword.trim().toLowerCase())
                 .stream()
                 .map(userMapper::toUserDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
