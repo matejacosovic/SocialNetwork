@@ -5,10 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.SocialNetwork.domain.User;
-import com.example.SocialNetwork.domain.dto.MessageDTO;
-import com.example.SocialNetwork.domain.dto.PasswordDTO;
-import com.example.SocialNetwork.domain.dto.PostDTO;
-import com.example.SocialNetwork.domain.dto.UserDTO;
+import com.example.SocialNetwork.domain.dto.*;
 import com.example.SocialNetwork.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.service.spi.InjectService;
@@ -42,10 +39,10 @@ public class UserController {
         return ResponseEntity.ok(userService.listUsers(search));
     }
 
-    @PostMapping("/connect/{withWho}")
+    @PostMapping("/connect")
     @PreAuthorize("hasAnyAuthority('ROLE_APP_USER', 'ROLE_ADMIN')")
-    public ResponseEntity<UserDTO> connect(@PathVariable String withWho){
-        return ResponseEntity.ok(userService.connect(getUsernameFromJwt(), withWho));
+    public ResponseEntity<UserDTO> connect(@RequestBody FriendDTO dto){
+        return ResponseEntity.ok(userService.connect(getUsernameFromJwt(), dto.getWithWho()));
     }
 
     @DeleteMapping("/connect/{withWho}")
@@ -55,8 +52,8 @@ public class UserController {
     }
 
     @PostMapping("/forgotPassword")
-    public ResponseEntity<MessageDTO> resetPassword(@RequestParam("email") String userEmail) {
-        return ResponseEntity.ok(userService.forgotPassword(userEmail));
+    public ResponseEntity<MessageDTO> resetPassword(@RequestBody EmailDTO dto) {
+        return ResponseEntity.ok(userService.forgotPassword(dto.getUserEmail()));
     }
 
     @PostMapping("/changePassword")
@@ -66,7 +63,7 @@ public class UserController {
 
     @PutMapping(value = "/deactivate")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public ResponseEntity<UserDTO> deactivateUser(@RequestParam(name = "userId") String userId){
-        return ResponseEntity.ok(userService.deactivateUser(userId));
+    public ResponseEntity<UserDTO> deactivateUser(@RequestBody UserDTO dto){
+        return ResponseEntity.ok(userService.deactivateUser(dto.getId()));
     }
 }

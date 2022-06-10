@@ -228,8 +228,13 @@ public class PostControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_APP_USER"})
     public void hidePost_wrongRoleAccessToken_statusIsForbidden() throws Exception {
+
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId("adadadsmin");
+
         this.mvc.perform(put("/api/v1/posts/hide")
-                        .param("postId", "adadadsmin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO))
                 )
                 .andExpect(status().isForbidden());
     }
@@ -237,8 +242,11 @@ public class PostControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void hidePost_withAccessTokenAndInvalidPostId_throwsException() throws Exception {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId("adadadsmin");
         this.mvc.perform(put("/api/v1/posts/hide")
-                        .param("postId", "adadadsmin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO))
                 )
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: adadadsmin")));
@@ -247,8 +255,11 @@ public class PostControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void hidePost_withAccessTokenAndValidPostId_hidesPost() throws Exception {
+        PostDTO postDTO = new PostDTO();
+        postDTO.setId("test-post1");
         this.mvc.perform(put("/api/v1/posts/hide")
-                        .param("postId", "test-post1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(postDTO))
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text", equalTo("test text1")))

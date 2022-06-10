@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.integration;
 
+import com.example.SocialNetwork.domain.dto.EmailDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import org.junit.Test;
@@ -159,17 +160,22 @@ public class UserControllerTest extends AbstractControllerTest {
 
     @Test
     public void forgotPassword_returnsSuccess_validEmail() throws Exception {
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setUserEmail("mateja.test@vegait.rs");
         this.mvc.perform(post("/api/v1/users/forgotPassword")
-                        .param("email", "mateja.test@vegait.rs"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(emailDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message", equalTo("Success!")));
     }
 
     @Test
     public void forgotPassword_throwsException_invalidEmail() throws Exception {
-
+        EmailDTO emailDTO = new EmailDTO();
+        emailDTO.setUserEmail("mateja.test11@vegait.rs");
         this.mvc.perform(post("/api/v1/users/forgotPassword")
-                        .param("email", "mateja.test11@vegait.rs"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(emailDTO)))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.debugMessage", equalTo("No user with the given email!")));
     }
@@ -221,8 +227,11 @@ public class UserControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void deactivateUser_withAccessTokenAndValidUserId_deactivatesUser() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId("test-id");
         this.mvc.perform(put("/api/v1/users/deactivate")
-                        .param("userId", "test-id"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", equalTo("DEACTIVATED")))
                 .andExpect(jsonPath("$.email", equalTo("mateja.test@vegait.rs")));
@@ -232,19 +241,25 @@ public class UserControllerTest extends AbstractControllerTest {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void deactivateUser_withAccessTokenAndInvalidUserId_throwsException() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId("maka");
         this.mvc.perform(put("/api/v1/users/deactivate")
-                        .param("userId", "mak")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userDTO))
                 )
                 .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.debugMessage", equalTo("User with id: mak doesn't exist!")));
+                .andExpect(jsonPath("$.debugMessage", equalTo("User with id: maka doesn't exist!")));
 
     }
 
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_APP_USER"})
     public void deactivateUser_withWrongRoleAccessToken_statusIsForbidden() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId("maka");
         this.mvc.perform(put("/api/v1/users/deactivate")
-                        .param("userId", "maka"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(userDTO)))
                 .andExpect(status().isForbidden());
     }
 
