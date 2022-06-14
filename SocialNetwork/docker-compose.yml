@@ -1,0 +1,48 @@
+version: '3.3'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+    network_mode: host
+    volumes:
+      - /data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  neo4j:
+    image: neo4j:4.1.9
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - app-neo4j-db:/data
+    environment:
+      NEO4J_AUTH: neo4j/secret # Username: neo4j, Password: secret
+      dbms_connector_bolt_listen__address: neo4j-db:7687
+      dbms_connector_bolt_advertised__address: neo4j-db:7687
+
+  socialnetwork:
+    depends_on:
+      - postgres
+      - neo4j
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: socialnetwork
+    restart: on-failure
+    network_mode: host
+    ports:
+      - "8080:8080"
+    stdin_open: true
+    tty: true
+
+volumes:
+  app-neo4j-db:
