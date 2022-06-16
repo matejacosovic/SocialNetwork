@@ -4,11 +4,13 @@ import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
+import com.example.SocialNetwork.repository.UserNodeRepository;
 import com.example.SocialNetwork.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,6 +27,8 @@ import static org.junit.Assert.*;
 @Transactional
 class UserServiceTest {
 
+    @MockBean
+    private UserNodeRepository userNodeRepository;
     @Autowired
     private UserService userService;
 

@@ -10,6 +10,7 @@ import com.example.SocialNetwork.domain.enums.PostStatus;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.repository.PostRepository;
 import com.example.SocialNetwork.repository.RoleRepository;
+import com.example.SocialNetwork.repository.UserNodeRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.PostService;
 import com.example.SocialNetwork.service.UserService;
@@ -43,6 +44,9 @@ class PostServiceTest {
     private PostRepository postRepository;
     @MockBean
     private UserService userService;
+
+    @MockBean
+    private UserNodeRepository userNodeRepository;
     @Autowired
     private PostService postService;
 
@@ -92,6 +96,7 @@ class PostServiceTest {
         List<Post> postsByUser2 = new ArrayList<>();
         postsByUser2.add(post2);
 
+        given(userNodeRepository.findUserFriendsByUsername("user1")).willReturn(List.of());
 
         given(userService.findUser("user1")).willReturn(user1);
         given(userService.findUser("non_existing")).willThrow(new IllegalArgumentException("User with id: non_existing doesn't exist!"));
