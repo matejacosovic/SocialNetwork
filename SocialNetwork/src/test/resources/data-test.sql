@@ -7,9 +7,6 @@ INSERT INTO users (id, email, password, name, surname, username, status) values
     ('user-id', 'mateja.test2@vegait.rs', '$2a$12$.yaNGFMfd9ueDqT3LArDwOj6V0Ody4fMlteBIrYgJni0UnCx2gHfS', 'Admin', 'Adminkovic', 'user', 'ACTIVATED'),
     ('ccb953a7-d244-48bb-8627-4b2437491dc2', 'mateja.test1@vegait.rs', '$2a$12$.yaNGFMfd9ueDqT3LArDwOj6V0Ody4fMlteBIrYgJni0UnCx2gHfS', 'Admin', 'Adminkovic', 'maka', 'DEACTIVATED');
 
-INSERT INTO friends (user_id, friend_id) values
-    ('test-id', 'ccb953a7-d244-48bb-8627-4b2437491dc2');
-
 INSERT INTO user_role (user_id, role_id) values
     ('test-id', 1),
     ('user-id', 2),

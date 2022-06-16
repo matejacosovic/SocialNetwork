@@ -2,9 +2,11 @@ package com.example.SocialNetwork.mapper;
 
 
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.UserNode;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.repository.RoleRepository;
+import com.example.SocialNetwork.repository.UserNodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,7 +21,7 @@ public class UserMapper {
 
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-
+    private final UserNodeRepository userNodeRepository;
     public User toUser(UserDTO userDTO) {
         return User
                 .builder()
@@ -29,16 +31,16 @@ public class UserMapper {
                 .password(passwordEncoder.encode(userDTO.getPassword()))
                 .email(userDTO.getEmail())
                 .role(roleRepository.findByName("ROLE_APP_USER"))
-                .friends(new HashSet<>())
-                .friendOf(new HashSet<>())
                 .status(UserStatus.ACTIVATED)
                 .build();
     }
 
     public UserDTO toUserDTO(User user) {
-        List<String> friends = new ArrayList<>();
-        friends.addAll(user.getFriends().stream().map(User::getUsername).toList());
-        friends.addAll(user.getFriendOf().stream().map(User::getUsername).toList());
+        List<String> friends = new ArrayList<>(userNodeRepository
+                                                .findUserFriendsById(user.getId())
+                                                .stream()
+                                                .map(UserNode::getUsername)
+                                                .toList());
         return UserDTO
                 .builder()
                 .id(user.getId())

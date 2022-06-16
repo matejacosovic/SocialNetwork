@@ -60,13 +60,12 @@ class PostServiceTest {
                 "1",
                 "user1");
 
-        user1.addFriend(user2);
-
         Post post1 = new Post(
                 "created post",
                 "created post",
                 user1
         );
+
         var currentDate = new Date();
         var futureDate = new Date(currentDate.getTime() + 5*60000);
         post1.setCreatedDate(futureDate);
@@ -205,7 +204,7 @@ class PostServiceTest {
     @Test
     void listAllForUser_returnsAllPostsForUserFeed_validId() {
         List<PostDTO> posts = postService.getAllForUser("user1");
-        assertEquals(2, posts.size());
+        assertEquals(1, posts.size());
     }
 
     @Test

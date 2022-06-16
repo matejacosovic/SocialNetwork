@@ -43,6 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/users/forgotPassword").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/v1/users/changePassword").permitAll()
+                .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated().and()
                 .addFilterBefore(new CustomAuthorizationFilter(secret, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
     }

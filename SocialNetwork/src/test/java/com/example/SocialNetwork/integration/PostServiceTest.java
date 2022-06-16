@@ -129,7 +129,7 @@ class PostServiceTest {
     @Test
     void listAllForUser_returnsAllPostsForUserFeed_validId() {
         List<PostDTO> posts = postService.getAllForUser("admin");
-        assertEquals(3, posts.size());
+        assertEquals(2, posts.size());
     }
 
     @Test
