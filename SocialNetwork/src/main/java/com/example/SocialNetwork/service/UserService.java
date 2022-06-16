@@ -1,15 +1,15 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.domain.FriendsWith;
 import com.example.SocialNetwork.domain.PasswordResetToken;
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.UserNode;
 import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.mapper.UserMapper;
-import com.example.SocialNetwork.repository.PasswordTokenRepository;
-import com.example.SocialNetwork.repository.RoleRepository;
-import com.example.SocialNetwork.repository.UserRepository;
+import com.example.SocialNetwork.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,15 +34,21 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final PasswordTokenRepository passwordTokenRepository;
     private final MailSenderService mailSenderService;
-
+    private final UserNodeRepository userNodeRepository;
     private final UserMapper userMapper;
-
     private final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     private final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
+
     public UserDTO create(UserDTO userDTO) {
         validateUserDto(userDTO);
         User user = userMapper.toUser(userDTO);
         userRepository.save(user);
+
+        UserNode userNode = new UserNode();
+        userNode.setId(user.getId());
+        userNode.setUsername(user.getUsername());
+        userNodeRepository.save(userNode);
+
         return userMapper.toUserDTO(user);
     }
 
@@ -85,18 +91,48 @@ public class UserService implements UserDetailsService {
         User connector = findUser(who);
         User connected = checkIfUserExists(withWho);
 
-        connector.addFriend(connected);
-        userRepository.save(connector);
+        UserNode connectorNode = userNodeRepository.findById(connector.getId()).get();
+        UserNode connectedNode = userNodeRepository.findById(connected.getId()).get();
+
+        if(checkIfFriendshipExists(connectorNode, connectedNode)){
+            return userMapper.toUserDTO(connector);
+        }
+
+        createFriendship(connectorNode, connectedNode);
 
         return userMapper.toUserDTO(connector);
+    }
+
+    private void createFriendship(UserNode connectorNode, UserNode connectedNode) {
+        LocalDateTime currentDate = LocalDateTime.now();
+
+        FriendsWith relationshipToConnectedNode = new FriendsWith();
+        relationshipToConnectedNode.setUser(connectedNode);
+        relationshipToConnectedNode.setCreatedAt(currentDate);
+
+        FriendsWith relationshipToConnectorNode = new FriendsWith();
+        relationshipToConnectorNode.setUser(connectorNode);
+        relationshipToConnectorNode.setCreatedAt(currentDate);
+
+        connectorNode.addFriend(relationshipToConnectedNode);
+        connectedNode.addFriend(relationshipToConnectorNode);
+
+        userNodeRepository.save(connectorNode);
+        userNodeRepository.save(connectedNode);
+    }
+
+    private boolean checkIfFriendshipExists(UserNode connectorNode, UserNode connectedNode) {
+        return userNodeRepository
+                .findUserFriendsById(connectorNode.getId())
+                .stream()
+                .anyMatch(elem -> elem.getId().equals(connectedNode.getId()));
     }
 
     public UserDTO removeConnect(String who, String withWho) {
         User connector = findUser(who);
         User connected = checkIfUserExists(withWho);
 
-        connector.removeFriend(connected);
-        userRepository.save(connector);
+        userNodeRepository.deleteFriendConnection(connector.getId(), connected.getId());
 
         return userMapper.toUserDTO(connector);
     }

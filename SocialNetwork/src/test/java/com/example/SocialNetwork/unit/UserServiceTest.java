@@ -3,12 +3,14 @@ package com.example.SocialNetwork.unit;
 import com.example.SocialNetwork.domain.PasswordResetToken;
 import com.example.SocialNetwork.domain.Role;
 import com.example.SocialNetwork.domain.User;
+import com.example.SocialNetwork.domain.UserNode;
 import com.example.SocialNetwork.domain.dto.MessageDTO;
 import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.repository.PasswordTokenRepository;
 import com.example.SocialNetwork.repository.RoleRepository;
+import com.example.SocialNetwork.repository.UserNodeRepository;
 import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.MailSenderService;
 import com.example.SocialNetwork.service.UserService;
@@ -37,8 +39,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
@@ -53,6 +54,9 @@ class UserServiceTest {
 
     @MockBean
     private PasswordTokenRepository passwordTokenRepository;
+
+    @MockBean
+    private UserNodeRepository userNodeRepository;
 
     @Autowired
     private UserService userService;
@@ -97,6 +101,8 @@ class UserServiceTest {
         userListAll.add(user2);
         userListAll.add(user3);
         userListAll.add(disabled);
+
+        given(userNodeRepository.save(any(UserNode.class))).willReturn(null);
 
         given(userRepository.search("")).willReturn(userListAll);
         given(userRepository.search("1")).willReturn(userListOne);

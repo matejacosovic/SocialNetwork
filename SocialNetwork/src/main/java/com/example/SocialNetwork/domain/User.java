@@ -38,18 +38,6 @@ public class User extends BaseEntity {
     @Column(name = "status")
     private UserStatus status;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "friends",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "friend_id"))
-    private Set<User> friends = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "friends",
-            joinColumns = @JoinColumn(name = "friend_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> friendOf = new HashSet<>();
-
     @OneToMany(mappedBy = "user")
     private List<Post> posts = new ArrayList<>();
 
@@ -71,12 +59,12 @@ public class User extends BaseEntity {
         this.status = UserStatus.ACTIVATED;
     }
 
-    public void addFriend(User friend) {
-        friends.add(friend);
-    }
-
-    public void removeFriend(User friend) {
-        friends.remove(friend);
-    }
+//    public void addFriend(User friend) {
+//        friends.add(friend);
+//    }
+//
+//    public void removeFriend(User friend) {
+//        friends.remove(friend);
+//    }
 
 }

@@ -206,7 +206,7 @@ public class PostControllerTest extends AbstractControllerTest {
     public void getFeedForUser_withAccessToken_returnsFeedForUser() throws Exception {
         this.mvc.perform(get("/api/v1/posts/feed"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].text", equalTo("test text1")));
     }
 

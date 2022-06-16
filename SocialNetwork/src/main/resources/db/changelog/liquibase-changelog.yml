@@ -7,3 +7,5 @@ databaseChangeLog:
       file: db/changelog/insert-data-users.xml
   - include:
       file: db/changelog/insert-data-user-roles.xml
+  - include:
+      file: db/changelog/delete-table-friends.xml
