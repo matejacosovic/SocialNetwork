@@ -1,14 +1,15 @@
 package com.example.SocialNetwork.domain.dto;
 
+import java.util.Date;
+
+import javax.validation.constraints.NotBlank;
+
 import com.example.SocialNetwork.domain.enums.PostStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

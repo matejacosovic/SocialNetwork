@@ -1,12 +1,15 @@
 package com.example.SocialNetwork.domain;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @MappedSuperclass
 @Where(clause = "deleted = false")

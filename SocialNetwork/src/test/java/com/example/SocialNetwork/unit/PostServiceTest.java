@@ -1,39 +1,32 @@
 package com.example.SocialNetwork.unit;
 
-import com.example.SocialNetwork.domain.PasswordResetToken;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import com.example.SocialNetwork.domain.Post;
-import com.example.SocialNetwork.domain.Role;
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.PostDTO;
-import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.PostStatus;
-import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.repository.PostRepository;
-import com.example.SocialNetwork.repository.RoleRepository;
 import com.example.SocialNetwork.repository.UserNodeRepository;
-import com.example.SocialNetwork.repository.UserRepository;
 import com.example.SocialNetwork.service.PostService;
 import com.example.SocialNetwork.service.UserService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

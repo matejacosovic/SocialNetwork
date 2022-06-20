@@ -1,19 +1,20 @@
 package com.example.SocialNetwork.mapper;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.UserNode;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.repository.RoleRepository;
 import com.example.SocialNetwork.repository.UserNodeRepository;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor

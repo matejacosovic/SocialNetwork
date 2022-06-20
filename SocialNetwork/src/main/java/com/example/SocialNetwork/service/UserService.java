@@ -1,5 +1,15 @@
 package com.example.SocialNetwork.service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
+
+import javax.transaction.Transactional;
+
 import com.example.SocialNetwork.domain.FriendsWith;
 import com.example.SocialNetwork.domain.PasswordResetToken;
 import com.example.SocialNetwork.domain.User;
@@ -9,21 +19,18 @@ import com.example.SocialNetwork.domain.dto.PasswordDTO;
 import com.example.SocialNetwork.domain.dto.UserDTO;
 import com.example.SocialNetwork.domain.enums.UserStatus;
 import com.example.SocialNetwork.mapper.UserMapper;
-import com.example.SocialNetwork.repository.*;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.SocialNetwork.repository.PasswordTokenRepository;
+import com.example.SocialNetwork.repository.UserNodeRepository;
+import com.example.SocialNetwork.repository.UserRepository;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.regex.Pattern;
 
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

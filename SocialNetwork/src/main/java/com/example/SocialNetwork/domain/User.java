@@ -1,14 +1,33 @@
 package com.example.SocialNetwork.domain;
 
-import com.example.SocialNetwork.domain.enums.PostStatus;
-import com.example.SocialNetwork.domain.enums.UserStatus;
-import lombok.*;
-import org.hibernate.annotations.Where;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import javax.persistence.*;
-import java.util.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import com.example.SocialNetwork.domain.enums.UserStatus;
+
+import org.hibernate.annotations.Where;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.Singular;
 
 @Entity
 @Table(name = "users")
@@ -58,13 +77,5 @@ public class User extends BaseEntity {
         this.username = username;
         this.status = UserStatus.ACTIVATED;
     }
-
-//    public void addFriend(User friend) {
-//        friends.add(friend);
-//    }
-//
-//    public void removeFriend(User friend) {
-//        friends.remove(friend);
-//    }
 
 }
