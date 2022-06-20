@@ -1,25 +1,31 @@
 package com.example.SocialNetwork.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.SocialNetwork.domain.User;
-import com.example.SocialNetwork.domain.dto.*;
-import com.example.SocialNetwork.service.UserService;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.service.spi.InjectService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import static com.example.SocialNetwork.security.AuthenticationUtil.getUsernameFromJwt;
+
+import java.util.List;
 
 import javax.validation.Valid;
 
-import static com.example.SocialNetwork.security.AuthenticationUtil.getUsernameFromJwt;
-import java.util.List;
+import com.example.SocialNetwork.domain.dto.EmailDTO;
+import com.example.SocialNetwork.domain.dto.FriendDTO;
+import com.example.SocialNetwork.domain.dto.MessageDTO;
+import com.example.SocialNetwork.domain.dto.PasswordDTO;
+import com.example.SocialNetwork.domain.dto.UserDTO;
+import com.example.SocialNetwork.service.UserService;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("api/v1/users")
