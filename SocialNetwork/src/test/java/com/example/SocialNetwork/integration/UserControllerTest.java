@@ -15,10 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -30,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class UserControllerTest extends TestMapper {
 
     @MockBean
@@ -51,7 +54,8 @@ public class UserControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void listAllUsers_withAccessToken_returnsAllUsers() throws Exception {
-        this.mvc.perform(get("/api/v1/users"))
+        this.mvc.perform(get("/api/v1/users")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].email", equalTo("mateja.test@vegait.rs")));
@@ -62,6 +66,7 @@ public class UserControllerTest extends TestMapper {
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void listUsersWithKeyword_withAccessToken_returnsOneUser() throws Exception {
         this.mvc.perform(get("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .param("search", "mak"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
@@ -71,6 +76,7 @@ public class UserControllerTest extends TestMapper {
     @Test
     public void listUsers_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -78,7 +84,8 @@ public class UserControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_APP_USER"})
     public void listUsers_wrongRoleAccessToken_statusIsForbidden() throws Exception {
-        this.mvc.perform(get("/api/v1/users"))
+        this.mvc.perform(get("/api/v1/users")
+                       .header("tenant", "tenant1"))
                 .andExpect(status().isForbidden());
     }
 
@@ -94,6 +101,7 @@ public class UserControllerTest extends TestMapper {
         );
 
         this.mvc.perform(post("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userForSavingDTO)))
                 .andExpect(status().isOk())
@@ -113,6 +121,7 @@ public class UserControllerTest extends TestMapper {
         );
 
         this.mvc.perform(post("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userForSavingDTO)))
                 .andExpect(status().isBadRequest())
@@ -132,6 +141,7 @@ public class UserControllerTest extends TestMapper {
         );
 
         this.mvc.perform(post("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userForSavingDTO)))
                 .andExpect(status().isConflict())
@@ -150,6 +160,7 @@ public class UserControllerTest extends TestMapper {
         );
 
         this.mvc.perform(post("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userForSavingDTO)))
                 .andExpect(status().isConflict())
@@ -168,6 +179,7 @@ public class UserControllerTest extends TestMapper {
         );
 
         this.mvc.perform(post("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userForSavingDTO)))
                 .andExpect(status().isConflict())
@@ -185,6 +197,7 @@ public class UserControllerTest extends TestMapper {
         );
 
         this.mvc.perform(post("/api/v1/users")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userForSavingDTO)))
                 .andExpect(status().isConflict())
@@ -196,6 +209,7 @@ public class UserControllerTest extends TestMapper {
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setUserEmail("mateja.test@vegait.rs");
         this.mvc.perform(post("/api/v1/users/forgotPassword")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(emailDTO)))
                 .andExpect(status().isOk())
@@ -207,6 +221,7 @@ public class UserControllerTest extends TestMapper {
         EmailDTO emailDTO = new EmailDTO();
         emailDTO.setUserEmail("mateja.test11@vegait.rs");
         this.mvc.perform(post("/api/v1/users/forgotPassword")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(emailDTO)))
                 .andExpect(status().isConflict())
@@ -218,6 +233,7 @@ public class UserControllerTest extends TestMapper {
         PasswordDTO passwordDTO = new PasswordDTO("expired", "novasifra");
 
         this.mvc.perform(post("/api/v1/users/changePassword")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(passwordDTO)))
                 .andExpect(status().isOk())
@@ -229,6 +245,7 @@ public class UserControllerTest extends TestMapper {
         PasswordDTO passwordDTO = new PasswordDTO("non_existing", "novasifra");
 
         this.mvc.perform(post("/api/v1/users/changePassword")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(passwordDTO)))
                 .andExpect(status().isOk())
@@ -240,6 +257,7 @@ public class UserControllerTest extends TestMapper {
         PasswordDTO passwordDTO = new PasswordDTO("valid", "novasifra");
 
         this.mvc.perform(post("/api/v1/users/changePassword")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(passwordDTO)))
                 .andExpect(status().isOk())
@@ -251,6 +269,7 @@ public class UserControllerTest extends TestMapper {
         PasswordDTO passwordDTO = new PasswordDTO();
         passwordDTO.setToken("valid");
         this.mvc.perform(post("/api/v1/users/changePassword")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(passwordDTO)))
                 .andExpect(status().isBadRequest())
@@ -263,6 +282,7 @@ public class UserControllerTest extends TestMapper {
         UserDTO userDTO = new UserDTO();
         userDTO.setId("test-id");
         this.mvc.perform(put("/api/v1/users/deactivate")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userDTO)))
                 .andExpect(status().isOk())
@@ -277,6 +297,7 @@ public class UserControllerTest extends TestMapper {
         UserDTO userDTO = new UserDTO();
         userDTO.setId("maka");
         this.mvc.perform(put("/api/v1/users/deactivate")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userDTO))
                 )
@@ -291,6 +312,7 @@ public class UserControllerTest extends TestMapper {
         UserDTO userDTO = new UserDTO();
         userDTO.setId("maka");
         this.mvc.perform(put("/api/v1/users/deactivate")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(userDTO)))
                 .andExpect(status().isForbidden());
@@ -299,6 +321,7 @@ public class UserControllerTest extends TestMapper {
     @Test
     public void deactivateUser_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(put("/api/v1/users/deactivate")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }

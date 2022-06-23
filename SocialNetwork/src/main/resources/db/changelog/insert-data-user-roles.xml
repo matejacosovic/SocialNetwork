@@ -12,5 +12,9 @@
             <column name="user_id" value="ccb953a7-d244-48bb-8627-4b2437491dc1"/>
             <column name="role_id" valueNumeric="1"/>
         </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="ccb953a7-d244-48bb-8627-4b2437491dc2"/>
+            <column name="role_id" valueNumeric="1"/>
+        </insert>
     </changeSet>
 </databaseChangeLog>

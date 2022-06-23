@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.SocialNetwork.domain.ApiError;
+import com.example.SocialNetwork.exception.TenantHeaderMissingException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,15 @@ public class RestExceptionHandler {
                 LocalDateTime.now(),
                 "Access denied!",
                 ex.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(TenantHeaderMissingException.class)
+    public final ResponseEntity<Object> handleException(
+        TenantHeaderMissingException ex) {
+        return new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(),
+                "Header missing",
+                ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)

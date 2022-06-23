@@ -1,7 +1,7 @@
 package com.example.SocialNetwork.config;
 
 import com.example.SocialNetwork.security.CustomAuthorizationFilter;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +16,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
