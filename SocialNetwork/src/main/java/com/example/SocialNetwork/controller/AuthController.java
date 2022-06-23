@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.example.SocialNetwork.config.TenantContext;
 import com.example.SocialNetwork.domain.AccessTokenDTO;
 import com.example.SocialNetwork.domain.dto.JwtAuthDTO;
 
@@ -59,6 +60,7 @@ public class AuthController {
                         .stream()
                         .map(GrantedAuthority::getAuthority)
                         .toList())
+                .withClaim("tenantID", TenantContext.getCurrentTenant())
                 .sign(algorithm);
 
         return ResponseEntity.ok(new AccessTokenDTO(accessToken));

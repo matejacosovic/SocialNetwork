@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.service;
 
+import com.example.SocialNetwork.config.TenantContext;
 import com.example.SocialNetwork.domain.Post;
 import com.example.SocialNetwork.domain.User;
 import com.example.SocialNetwork.domain.dto.PostDTO;
@@ -10,6 +11,8 @@ import com.example.SocialNetwork.repository.UserNodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,14 +29,16 @@ public class PostService {
 
     private final UserNodeRepository userNodeRepository;
     private final PostMapper postMapper;
-
+    @PersistenceContext
+    public EntityManager entityManager;
+    
     public PostDTO create(PostDTO postDTO, String usernameFromJwt) {
         User user = userService.findUser(usernameFromJwt);
 
         Post post = postMapper.toPost(postDTO.getText(),
                 postDTO.getImage(),
                 user);
-
+        post.setTenantId(TenantContext.getCurrentTenant());
         return postMapper.toPostDto(postRepository.save(post));
     }
 

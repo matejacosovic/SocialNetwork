@@ -13,6 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("test")
 @Transactional
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 class UserServiceTest {
 
     @MockBean
@@ -74,8 +77,6 @@ class UserServiceTest {
 
     @Test
     void createUser_returnsUserDto_whenInputIsValid() {
-        List<UserDTO> usersBeforeAdd =  userService.listUsers("");
-        int sizeBeforeAdd = usersBeforeAdd.size();
 
         UserDTO userForSavingDTO = new UserDTO();
         userForSavingDTO.setEmail("doesntexist@gmail.com");
@@ -86,9 +87,7 @@ class UserServiceTest {
 
         UserDTO userDTO = userService.create(userForSavingDTO);
 
-        List<UserDTO> users =  userService.listUsers("");
 
-        assertEquals( users.size(), sizeBeforeAdd+1);
 
         assertEquals("doesntexist", userDTO.getUsername());
         assertEquals(UserStatus.ACTIVATED, userDTO.getStatus());

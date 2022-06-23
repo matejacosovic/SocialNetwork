@@ -1,8 +1,18 @@
 package com.example.SocialNetwork.integration;
 
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.example.SocialNetwork.domain.dto.PostDTO;
 import com.example.SocialNetwork.repository.UserNodeRepository;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,22 +24,20 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Transactional
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class PostControllerTest extends TestMapper {
 
     @MockBean
@@ -54,6 +62,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setImage("some_img");
 
         this.mvc.perform(post("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -66,6 +75,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setImage("some_img");
 
         this.mvc.perform(post("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isOk())
@@ -79,6 +89,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setImage("some_img");
 
         this.mvc.perform(post("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isBadRequest())
@@ -88,6 +99,7 @@ public class PostControllerTest extends TestMapper {
     @Test
     public void readPost_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/posts/1")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -95,7 +107,8 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void readPost_withAccessTokenAndValidPostId_returnsPost() throws Exception {
-        this.mvc.perform(get("/api/v1/posts/test-post1"))
+        this.mvc.perform(get("/api/v1/posts/test-post1")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text", equalTo("test text1")));
     }
@@ -103,7 +116,8 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void readPost_withAccessTokenAndInvalidPostId_throwsException() throws Exception {
-        this.mvc.perform(get("/api/v1/posts/14"))
+        this.mvc.perform(get("/api/v1/posts/14")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: 14")));
     }
@@ -115,6 +129,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setImage("some_img");
 
         this.mvc.perform(put("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -128,6 +143,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setId("test-post1");
 
         this.mvc.perform(put("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isOk())
@@ -141,6 +157,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setImage("some_img");
 
         this.mvc.perform(put("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isBadRequest())
@@ -156,6 +173,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setId("test-post1241");
 
         this.mvc.perform(put("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO)))
                 .andExpect(status().isConflict())
@@ -165,6 +183,7 @@ public class PostControllerTest extends TestMapper {
     @Test
     public void deletePost_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(delete("/api/v1/posts/1")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken")
                 )
                 .andExpect(status().isUnauthorized());
@@ -173,7 +192,8 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void deletePost_withAccessTokenAndValidPostId_statusIsOk() throws Exception {
-        this.mvc.perform(delete("/api/v1/posts/test-post1"))
+        this.mvc.perform(delete("/api/v1/posts/test-post1")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.text", equalTo("test text1")));
     }
@@ -181,7 +201,8 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void deletePost_withAccessTokenAndInvalidPostId_throwsException() throws Exception {
-        this.mvc.perform(delete("/api/v1/posts/13412"))
+        this.mvc.perform(delete("/api/v1/posts/13412")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.debugMessage", equalTo("There is no post with the given id: 13412")));
     }
@@ -189,7 +210,8 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void getAll_withAccessToken_returnsAllPosts() throws Exception {
-        this.mvc.perform(get("/api/v1/posts"))
+        this.mvc.perform(get("/api/v1/posts")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].text", equalTo("test text1")));
@@ -198,13 +220,15 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "user", authorities = {"ROLE_APP_USER"})
     public void getAll_withWrongRoleAccessToken_statusIsForbidden() throws Exception {
-        this.mvc.perform(get("/api/v1/posts"))
+        this.mvc.perform(get("/api/v1/posts")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     public void getAll_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/posts")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -213,6 +237,7 @@ public class PostControllerTest extends TestMapper {
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void getAllByUser_withAccessTokenAndValidId_returnsAllUserPosts() throws Exception {
         this.mvc.perform(get("/api/v1/posts/wall")
+                        .header("tenant", "tenant1")        
                         .param("userId", "test-id"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -223,6 +248,7 @@ public class PostControllerTest extends TestMapper {
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void getAllByUser_withAccessTokenAndInvalidId_throwsException() throws Exception {
         this.mvc.perform(get("/api/v1/posts/wall")
+                        .header("tenant", "tenant1")
                         .param("userId", "adadadsmin"))
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.debugMessage", equalTo("User with id: adadadsmin doesn't exist!")));
@@ -231,6 +257,7 @@ public class PostControllerTest extends TestMapper {
     @Test
     public void getAllByUser_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/posts/wall")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -238,7 +265,8 @@ public class PostControllerTest extends TestMapper {
     @Test
     @WithMockUser(username = "admin", authorities = {"ROLE_ADMIN"})
     public void getFeedForUser_withAccessToken_returnsFeedForUser() throws Exception {
-        this.mvc.perform(get("/api/v1/posts/feed"))
+        this.mvc.perform(get("/api/v1/posts/feed")
+                        .header("tenant", "tenant1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].text", equalTo("test text1")));
@@ -247,6 +275,7 @@ public class PostControllerTest extends TestMapper {
     @Test
     public void getFeedForUser_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(get("/api/v1/posts/feed")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -255,6 +284,7 @@ public class PostControllerTest extends TestMapper {
     public void hidePost_invalidAccessToken_statusIsUnauthorized() throws Exception {
         this.mvc.perform(put("/api/v1/posts/hide")
                         .param("postId", "adadadsmin")
+                        .header("tenant", "tenant1")
                         .header("Authorization", "Bearer invalidToken"))
                 .andExpect(status().isUnauthorized());
     }
@@ -267,6 +297,7 @@ public class PostControllerTest extends TestMapper {
         postDTO.setId("adadadsmin");
 
         this.mvc.perform(put("/api/v1/posts/hide")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO))
                 )
@@ -279,6 +310,7 @@ public class PostControllerTest extends TestMapper {
         PostDTO postDTO = new PostDTO();
         postDTO.setId("adadadsmin");
         this.mvc.perform(put("/api/v1/posts/hide")
+                        .header("tenant", "tenant1")                
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO))
                 )
@@ -292,6 +324,7 @@ public class PostControllerTest extends TestMapper {
         PostDTO postDTO = new PostDTO();
         postDTO.setId("test-post1");
         this.mvc.perform(put("/api/v1/posts/hide")
+                        .header("tenant", "tenant1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(asJsonString(postDTO))
                 )

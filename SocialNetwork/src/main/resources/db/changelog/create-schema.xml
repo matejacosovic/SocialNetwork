@@ -31,9 +31,18 @@
                 <constraints nullable="false"/>
             </column>
             <column name="username" type="varchar(255)">
-                <constraints nullable="false" unique="true"/>
+                <constraints nullable="false"/>
+            </column>
+            <column name="tenant_id" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
             </column>
         </createTable>
+        
+        <addUniqueConstraint
+            columnNames="tenant_id, username"
+            constraintName="unique_username_per_tenant"
+            tableName="users"
+        />
 
         <createTable tableName="roles"
                      remarks="A table to contain all the roles">
@@ -84,6 +93,9 @@
             <column name="user_id" type="varchar(255)">
                 <constraints nullable="false" foreignKeyName="fk_user" references="users(id)"/>
             </column>
+            <column name="tenant_id" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
+            </column>
         </createTable>
 
         <createTable tableName="password_reset_token"
@@ -99,6 +111,9 @@
             </column>
             <column name="user_id" type="varchar(255)">
                 <constraints nullable="false" foreignKeyName="fk_user" references="users(id)"/>
+            </column>
+            <column name="tenant_id" type="varchar(255)">
+                <constraints nullable="false" unique="false"/>
             </column>
         </createTable>
 
