@@ -17,18 +17,6 @@
             <column name="password" value="$2a$12$aBK0PhtcZ9Zg.gBHCFh6Lu9d.oAypyEfhPtUevhQllLC1CD2Wtxku"/>
             <column name="username" value="admin"/>
             <column name="status" value="ACTIVATED"/>
-            <column name="tenant_id" value="tenant1"/>
-        </insert>
-        <insert tableName="users">
-            <column name="id" value="ccb953a7-d244-48bb-8627-4b2437491dc2"/>
-            <column name="deleted" value="false"/>
-            <column name="email" value="mateja.cosovic2@vegait.rs"/>
-            <column name="name" value="Admin"/>
-            <column name="surname" value="Adminkovic"/>
-            <column name="password" value="$2a$12$aBK0PhtcZ9Zg.gBHCFh6Lu9d.oAypyEfhPtUevhQllLC1CD2Wtxku"/>
-            <column name="username" value="admin"/>
-            <column name="status" value="ACTIVATED"/>
-            <column name="tenant_id" value="tenant2"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

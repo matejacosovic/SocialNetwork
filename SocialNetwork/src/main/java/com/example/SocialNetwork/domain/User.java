@@ -19,9 +19,6 @@ import javax.persistence.Table;
 
 import com.example.SocialNetwork.domain.enums.UserStatus;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 
 import lombok.AllArgsConstructor;
@@ -40,8 +37,6 @@ import lombok.Singular;
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"email"})
 @Builder
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "tenantId", type = "string")})
-@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;

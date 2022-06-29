@@ -1,5 +1,6 @@
 package com.example.SocialNetwork.config;
 
+import com.example.SocialNetwork.repository.TenantRepository;
 import com.example.SocialNetwork.security.CustomAuthorizationFilter;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private String secret;
     private final UserDetailsService userDetailsService;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final TenantRepository tenantRepository;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -47,7 +49,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/api/v1/users/changePassword").permitAll()
                 .antMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .anyRequest().authenticated().and()
-                .addFilterBefore(new CustomAuthorizationFilter(secret, handlerExceptionResolver), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new CustomAuthorizationFilter(secret, handlerExceptionResolver, tenantRepository), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean

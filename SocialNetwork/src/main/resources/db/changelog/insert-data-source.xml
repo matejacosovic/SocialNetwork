@@ -6,11 +6,13 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <changeSet id="06" author="mateja">
-        <comment>Inserting admin role</comment>
-        <insert tableName="user_role">
-            <column name="user_id" value="ccb953a7-d244-48bb-8627-4b2437491dc1"/>
-            <column name="role_id" valueNumeric="1"/>
+    <changeSet id="12" author="mateja">
+        <comment>Inserting data soruces</comment>
+        <insert tableName="tenant">
+            <column name="schema" value="tenant1"/>
+        </insert>
+        <insert tableName="tenant">
+            <column name="schema" value="tenant2"/>
         </insert>
     </changeSet>
 </databaseChangeLog>
