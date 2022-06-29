@@ -18,6 +18,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.SocialNetwork.config.TenantContext;
 import com.example.SocialNetwork.exception.TenantHeaderMissingException;
+import com.example.SocialNetwork.repository.TenantRepository;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -33,6 +34,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private final String secret;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final TenantRepository tenantRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -87,6 +89,10 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         if (tenantID == null) {
             throw new TenantHeaderMissingException("tenant not present in the Request Header");
         }
+        if(tenantRepository.findBySchema(tenantID).isEmpty()){
+            throw new TenantHeaderMissingException("invalid header");
+        }
+        
         TenantContext.setCurrentTenant(tenantID);
     }
 

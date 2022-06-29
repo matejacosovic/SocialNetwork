@@ -8,11 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
-import com.example.SocialNetwork.config.TenantContext;
 import com.example.SocialNetwork.domain.FriendsWith;
 import com.example.SocialNetwork.domain.PasswordResetToken;
 import com.example.SocialNetwork.domain.User;
@@ -48,13 +45,11 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
     private final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
     private final String PASSWORD_REGEX = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$";
-    @PersistenceContext
-    public EntityManager entityManager;
+    
     public UserDTO create(UserDTO userDTO) {
         validateUserDto(userDTO);
         User user = userMapper.toUser(userDTO);
 
-        user.setTenantId(TenantContext.getCurrentTenant());
         userRepository.save(user);
 
         UserNode userNode = new UserNode();
@@ -202,7 +197,6 @@ public class UserService implements UserDetailsService {
         myToken.setToken(token);
         myToken.setUser(user);
         myToken.setExpiryDate(LocalDateTime.now());
-        myToken.setTenantId(user.getTenantId());
         passwordTokenRepository.save(myToken);
     }
 

@@ -6,9 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
 import org.hibernate.annotations.Where;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -24,8 +21,6 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @AllArgsConstructor
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "tenantId", type = "string")})
-@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
 public class Post extends BaseEntity {
     @Column(columnDefinition = "text")
     private String text;

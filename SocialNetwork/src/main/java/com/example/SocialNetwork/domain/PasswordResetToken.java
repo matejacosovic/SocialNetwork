@@ -13,18 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
-import org.hibernate.annotations.ParamDef;
-
 import lombok.Data;
 
 @Entity
 @Table(name = "password_reset_token")
 @Data
-@FilterDef(name = "tenantFilter", parameters = {@ParamDef(name = "tenantId", type = "string")})
-@Filter(name = "tenantFilter", condition = "tenant_id = :tenantId")
-public class PasswordResetToken implements TenantSupport, Serializable{
+public class PasswordResetToken implements  Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +30,6 @@ public class PasswordResetToken implements TenantSupport, Serializable{
     private User user;
     @Column(nullable = false, name = "expiry_date")
     private LocalDateTime expiryDate;
-    @Column(name = "tenant_id")
-    private String tenantId;
     public void setExpiryDate(LocalDateTime expiryDate) {
         this.expiryDate = expiryDate.plusHours(1);
     }
